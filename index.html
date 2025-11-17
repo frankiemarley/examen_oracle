@@ -400,19 +400,29 @@
             } else {
                 optionElement.checked = true;
                 optionContainer.classList.add('selected');
-                // Add to selected options
-                selectedOptions[questionId].push(optionId);
+                // Add to selected options only if not already present
+                if (!selectedOptions[questionId].includes(optionId)) {
+                    selectedOptions[questionId].push(optionId);
+                }
             }
+            
+            // Sort the array to maintain consistent order
+            selectedOptions[questionId].sort((a, b) => a - b);
+            
+            console.log(`Question ${questionId} selected options:`, selectedOptions[questionId]);
         }
         
         // Function to check answers
         function checkAnswer(questionId, correctAnswersArray) {
             const feedback = document.getElementById(`feedback-${questionId}`);
-            const userAnswers = selectedOptions[questionId];
+            const userAnswers = [...selectedOptions[questionId]]; // Create a copy
             
             // Sort arrays for comparison
-            const sortedUserAnswers = [...userAnswers].sort();
-            const sortedCorrectAnswers = [...correctAnswersArray].sort();
+            const sortedUserAnswers = userAnswers.sort((a, b) => a - b);
+            const sortedCorrectAnswers = [...correctAnswersArray].sort((a, b) => a - b);
+            
+            console.log("User answers:", sortedUserAnswers);
+            console.log("Correct answers:", sortedCorrectAnswers);
             
             // Check if arrays are equal
             const isCorrect = JSON.stringify(sortedUserAnswers) === JSON.stringify(sortedCorrectAnswers);
@@ -422,7 +432,7 @@
                 correctAnswers++;
                 updateScore();
             } else {
-                feedback.innerHTML = `<div class="incorrect">Incorrect. Your answer: ${userAnswers.join(', ')}. Correct answer: ${correctAnswersArray.join(', ')}.</div>`;
+                feedback.innerHTML = `<div class="incorrect">Incorrect. Your answer: ${sortedUserAnswers.join(', ')}. Correct answer: ${sortedCorrectAnswers.join(', ')}.</div>`;
             }
             
             // Show feedback
