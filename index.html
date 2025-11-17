@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Práctica Examen Oracle PL/SQL</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .file-upload {
+            text-align: center;
+            padding: 40px;
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            background: #f8f9ff;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-upload:hover {
+            background: #eef0ff;
+            border-color: #764ba2;
+        }
+
+        .file-upload input {
+            display: none;
+        }
+
+        .file-upload-label {
+            font-size: 1.2em;
+            color: #667eea;
+            cursor: pointer;
+        }
+
+        .question-card {
+            background: #fff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 2px solid #e9ecef;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .question-number {
+            font-size: 1.1em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .question-text {
+            font-size: 1.2em;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            color: #2c3e50;
+        }
+
+        .options {
+            margin-bottom: 20px;
+        }
+
+        .option {
+            padding: 15px 20px;
+            margin: 10px 0;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .option input[type="checkbox"] {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .option.selected {
+            background: #eef0ff;
+            border-color: #667eea;
+        }
+
+        .option.correct {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .option.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .explanation {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .explanation.show {
+            display: block;
+        }
+
+        .explanation.correct {
+            background: #d4edda;
+            border: 2px solid #28a745;
+        }
+
+        .explanation.incorrect {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+        }
+
+        .explanation-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .explanation-text {
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .result-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .badge-correct {
+            background: #28a745;
+            color: white;
+        }
+
+        .badge-incorrect {
+            background: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Práctica Examen Oracle PL/SQL</h1>
+            <p>Prepárate para tu certificación</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-label">Progreso</div>
+                <div class="stat-value" id="progress">0/0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Correctas</div>
+                <div class="stat-value" id="correct" style="color: #28a745;">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Incorrectas</div>
+                <div class="stat-value" id="incorrect" style="color: #dc3545;">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Porcentaje</div>
+                <div class="stat-value" id="percentage">0%</div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div id="uploadSection" class="file-upload">
+                <input type="file" id="fileInput" accept=".txt">
+                <label for="fileInput" class="file-upload-label">
+                    📁 Haz clic para cargar tu archivo de preguntas (.txt)
+                </label>
+            </div>
+
+            <div id="examSection" class="hidden">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+                </div>
+
+                <div id="questionContainer"></div>
+
+                <div class="buttons">
+                    <button class="btn-primary" id="checkBtn">Comprobar Respuesta</button>
+                    <button class="btn-primary" id="nextBtn" style="display: none;">Siguiente Pregunta</button>
+                    <button class="btn-secondary" id="prevBtn">Anterior</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let questions = [];
+        let currentQuestion = 0;
+        let userAnswers = [];
+        let stats = {
+            correct: 0,
+            incorrect: 0,
+            total: 0
+        };
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    parseQuestions(e.target.result);
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function parseQuestions(text) {
+            const questionBlocks = text.split(/Pregunta \d+:/);
+            questions = [];
+
+            questionBlocks.forEach(block => {
+                if (block.trim().length === 0) return;
+
+                const lines = block.trim().split('\n');
+                const questionMatch = lines[0].match(/Q\d+\s+(.+)/);
+                if (!questionMatch) return;
+
+                const question = {
+                    id: questionMatch[0].match(/Q\d+/)[0],
+                    text: questionMatch[1],
+                    options: [],
+                    correctAnswer: '',
+                    explanation: ''
+                };
+
+                let inExplanation = false;
+                let explanationText = '';
+
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    
+                    if (line.match(/^\d+\./)) {
+                        question.options.push(line.replace(/^\d+\./, '').trim());
+                    } else if (line.includes('Explicación general')) {
+                        inExplanation = true;
+                    } else if (inExplanation && line.length > 0 && !line.includes('Modo de práctica')) {
+                        explanationText += line + '\n';
+                    } else if (!inExplanation && question.options.length > 0 && line.length > 3 && !line.startsWith('Q')) {
+                        question.correctAnswer = line;
+                    }
+                }
+
+                question.explanation = explanationText.trim();
+                
+                if (question.options.length > 0) {
+                    questions.push(question);
+                }
+            });
+
+            if (questions.length > 0) {
+                stats.total = questions.length;
+                userAnswers = new Array(questions.length).fill(null);
+                document.getElementById('uploadSection').classList.add('hidden');
+                document.getElementById('examSection').classList.remove('hidden');
+                showQuestion(0);
+                updateStats();
+            }
+        }
+
+        function showQuestion(index) {
+            currentQuestion = index;
+            const question = questions[index];
+            const container = document.getElementById('questionContainer');
+
+            let optionsHTML = '';
+            question.options.forEach((option, i) => {
+                const isSelected = userAnswers[index] && userAnswers[index].includes(i);
+                optionsHTML += `
+                    <div class="option ${isSelected ? 'selected' : ''}" onclick="toggleOption(${i})">
+                        <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleOption(${i})">
+                        <span>${option}</span>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = `
+                <div class="question-card">
+                    <div class="question-header">
+                        <span class="question-number">Pregunta ${index + 1} de ${questions.length}</span>
+                        <span class="question-number">${question.id}</span>
+                    </div>
+                    <div class="question-text">${question.text}</div>
+                    <div class="options" id="optionsContainer">
+                        ${optionsHTML}
+                    </div>
+                    <div class="explanation" id="explanation">
+                        <div class="explanation-title"></div>
+                        <div class="explanation-text"></div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('checkBtn').style.display = 'block';
+            document.getElementById('nextBtn').style.display = 'none';
+            document.getElementById('prevBtn').disabled = index === 0;
+            
+            updateProgressBar();
+        }
+
+        function toggleOption(optionIndex) {
+            if (!userAnswers[currentQuestion]) {
+                userAnswers[currentQuestion] = [];
+            }
+
+            const index = userAnswers[currentQuestion].indexOf(optionIndex);
+            if (index > -1) {
+                userAnswers[currentQuestion].splice(index, 1);
+            } else {
+                userAnswers[currentQuestion].push(optionIndex);
+            }
+
+            const options = document.querySelectorAll('.option');
+            options[optionIndex].classList.toggle('selected');
+        }
+
+        document.getElementById('checkBtn').addEventListener('click', function() {
+            if (!userAnswers[currentQuestion] || userAnswers[currentQuestion].length === 0) {
+                alert('Por favor, selecciona al menos una respuesta');
+                return;
+            }
+
+            const question = questions[currentQuestion];
+            const selectedOptions = userAnswers[currentQuestion].map(i => question.options[i]).join(', ');
+            const isCorrect = selectedOptions === question.correctAnswer;
+
+            const options = document.querySelectorAll('.option');
+            options.forEach((option, i) => {
+                const optionText = question.options[i];
+                if (question.correctAnswer.includes(optionText)) {
+                    option.classList.add('correct');
+                } else if (userAnswers[currentQuestion].includes(i)) {
+                    option.classList.add('incorrect');
+                }
+                option.style.pointerEvents = 'none';
+            });
+
+            const explanation = document.getElementById('explanation');
+            explanation.classList.add('show');
+            explanation.classList.add(isCorrect ? 'correct' : 'incorrect');
+            explanation.querySelector('.explanation-title').innerHTML = `
+                <span class="result-badge ${isCorrect ? 'badge-correct' : 'badge-incorrect'}">
+                    ${isCorrect ? '✓ ¡Correcto!' : '✗ Incorrecto'}
+                </span>
+            `;
+            explanation.querySelector('.explanation-text').textContent = 
+                `Respuesta correcta: ${question.correctAnswer}\n\n${question.explanation}`;
+
+            if (userAnswers[currentQuestion].answered === undefined) {
+                if (isCorrect) {
+                    stats.correct++;
+                } else {
+                    stats.incorrect++;
+                }
+                userAnswers[currentQuestion].answered = true;
+            }
+
+            updateStats();
+
+            this.style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'block';
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', function() {
+            if (currentQuestion < questions.length - 1) {
+                showQuestion(currentQuestion + 1);
+            }
+        });
+
+        document.getElementById('prevBtn').addEventListener('click', function() {
+            if (currentQuestion > 0) {
+                showQuestion(currentQuestion - 1);
+            }
+        });
+
+        function updateStats() {
+            document.getElementById('progress').textContent = `${currentQuestion + 1}/${stats.total}`;
+            document.getElementById('correct').textContent = stats.correct;
+            document.getElementById('incorrect').textContent = stats.incorrect;
+            
+            const answered = stats.correct + stats.incorrect;
+            const percentage = answered > 0 ? Math.round((stats.correct / answered) * 100) : 0;
+            document.getElementById('percentage').textContent = percentage + '%';
+        }
+
+        function updateProgressBar() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+    </script>
+</body>
+</html>
