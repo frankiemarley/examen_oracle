@@ -48,15 +48,6 @@
         .options {
             margin: 15px 0;
         }
-        .option {
-            margin: 8px 0;
-            padding: 8px;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
-        .option:hover {
-            background-color: #e9ecef;
-        }
         .answer {
             font-weight: bold;
             color: #27ae60;
@@ -228,6 +219,11 @@
         .reset-btn:hover {
             background-color: #c0392b;
         }
+        .multiple-choice-note {
+            font-style: italic;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -236,16 +232,18 @@
         
         <div class="score-display">
             <h3>Your Progress</h3>
-            <p>Correct: <span id="correct-count">0</span> / <span id="total-questions">35</span></p>
+            <p>Correct: <span id="correct-count">0</span> / <span id="total-questions">5</span></p>
             <p>Percentage: <span id="percentage">0%</span></p>
             <div class="progress-bar">
                 <div class="progress" id="progress-bar"></div>
             </div>
         </div>
 
+        <!-- Question 1 - Multiple Answers -->
         <div class="question" id="q1">
             <div class="question-number">Question 1: Q101</div>
             <p>Which of the following identifiers are valid in PL/SQL?</p>
+            <div class="multiple-choice-note">(Select all that apply)</div>
             <div class="options">
                 <div class="checkbox-option">
                     <input type="checkbox" id="q1-opt1" name="q1" value="1">
@@ -283,7 +281,7 @@
             <div class="question-controls">
                 <button class="show-answer" onclick="toggleAnswer(1)">Show Answer</button>
             </div>
-            <div class="answer hidden" id="answer-1">Answer: 1, 5, and 7</div>
+            <div class="answer hidden" id="answer-1">Answer: 1, 5, and 7 (total#amount, A1B2C3, my_variable)</div>
             <div class="explanation hidden" id="explanation-1">
                 <p><strong>Explanation:</strong></p>
                 <ul>
@@ -300,6 +298,7 @@
             </div>
         </div>
 
+        <!-- Question 2 - Single Answer -->
         <div class="question" id="q2">
             <div class="question-number">Question 2: Q102</div>
             <p>When declaring a VARCHAR2 variable in PL/SQL without specifying its size, what happens?</p>
@@ -348,6 +347,7 @@ END;</div>
             </div>
         </div>
 
+        <!-- Question 3 - Single Answer -->
         <div class="question" id="q3">
             <div class="question-number">Question 3: Q103</div>
             <p>What will be the output of the following code?</p>
@@ -399,6 +399,7 @@ end;</div>
             <div class="answer hidden" id="answer-3">Answer: Yes No</div>
         </div>
 
+        <!-- Question 4 - Single Answer -->
         <div class="question" id="q4">
             <div class="question-number">Question 4: Q104</div>
             <p>Consider the following PL/SQL block:</p>
@@ -443,6 +444,7 @@ END;</div>
             <div class="answer hidden" id="answer-4">Answer: 15</div>
         </div>
 
+        <!-- Question 5 - Single Answer -->
         <div class="question" id="q5">
             <div class="question-number">Question 5: Q105</div>
             <p>Examine the following PL/SQL code:</p>
@@ -509,12 +511,9 @@ END;</div>
             </div>
         </div>
 
-        <!-- Additional questions would continue here in the same pattern -->
-        <!-- For brevity, I've included the first 5 questions as examples -->
-
         <div class="quiz-summary">
             <h2>Quiz Complete!</h2>
-            <p>You've answered <span id="summary-correct">0</span> out of <span id="summary-total">35</span> questions correctly.</p>
+            <p>You've answered <span id="summary-correct">0</span> out of <span id="summary-total">5</span> questions correctly.</p>
             <p>Your final score: <span id="final-percentage">0%</span></p>
             <button class="reset-btn" onclick="resetQuiz()">Reset Quiz</button>
         </div>
@@ -523,7 +522,7 @@ END;</div>
     <script>
         // Initialize score tracking
         let correctAnswers = 0;
-        const totalQuestions = 5; // Update this to the actual number of questions
+        const totalQuestions = 5;
         
         // Function to check answers
         function checkAnswer(questionNumber, correctAnswer) {
