@@ -143,7 +143,8 @@
             background: #f8f9ff;
         }
 
-        .option input[type="checkbox"] {
+        .option input[type="checkbox"],
+        .option input[type="radio"] {
             margin-right: 15px;
             width: 20px;
             height: 20px;
@@ -268,6 +269,16 @@
             background: #dc3545;
             color: white;
         }
+
+        .multiple-answers-note {
+            color: #667eea;
+            font-style: italic;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f0f4ff;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
     </style>
 </head>
 <body>
@@ -342,7 +353,6 @@
         });
 
         function parseQuestions(text) {
-            // Split by question numbers like "1/65", "2/65", etc.
             const questionBlocks = text.split(/\n\d+\/\d+\s*\n/);
             questions = [];
             
@@ -355,7 +365,8 @@
                     text: '',
                     options: [],
                     correctAnswer: '',
-                    explanation: ''
+                    explanation: '',
+                    multipleAnswers: false
                 };
 
                 let currentSection = 'question';
@@ -365,40 +376,36 @@
                     const line = lines[i].trim();
                     
                     if (line.startsWith('Pregunta') || line.match(/^Q\d+/)) {
-                        // Skip question headers
                         continue;
                     }
                     else if (line.match(/^[A-Za-z]\)/) || line.match(/^\d+\./)) {
-                        // Options
                         currentSection = 'options';
                         question.options.push(line);
                     }
                     else if (line.includes('ANSWER') || line.includes('answer') || line.includes('Respuesta correcta')) {
-                        // Correct answer section
                         currentSection = 'answer';
                     }
                     else if (line.includes('Explicación general') || line.includes('Explicacion general')) {
-                        // Explanation section
                         currentSection = 'explanation';
                     }
                     else if (currentSection === 'question' && line.length > 0) {
-                        // Question text
                         if (question.text.length > 0) question.text += ' ';
                         question.text += line;
                     }
                     else if (currentSection === 'answer' && line.length > 0 && 
                            !line.includes('ANSWER') && !line.includes('answer') &&
                            !line.includes('Respuesta correcta')) {
-                        // Extract correct answer
-                        const answerMatch = line.match(/([A-Za-z0-9].*)/);
+                        const answerMatch = line.match(/ANSWER:\s*(.+)/i) || line.match(/([A-Za-z0-9,].*)/);
                         if (answerMatch) {
                             question.correctAnswer = answerMatch[1].trim();
+                            // Check if multiple answers (contains commas or multiple letters)
+                            if (question.correctAnswer.includes(',') || question.correctAnswer.match(/[a-zA-Z]{2,}/)) {
+                                question.multipleAnswers = true;
+                            }
                         }
                     }
                     else if (currentSection === 'explanation' && line.length > 0 && 
-                           !line.includes('Explicación general') && !line.includes('Explicacion general') &&
-                           !line.includes('Modo de práctica')) {
-                        // Explanation text
+                           !line.includes('Explicación general') && !line.includes('Explicacion general')) {
                         if (question.explanation.length > 0) question.explanation += '\n';
                         question.explanation += line;
                     }
@@ -406,7 +413,6 @@
                            !line.match(/^[A-Za-z]\)/) && !line.match(/^\d+\./) &&
                            !line.includes('ANSWER') && !line.includes('answer') &&
                            !line.includes('Explicación general') && !line.includes('Explicacion general')) {
-                        // Continue option text
                         if (question.options.length > 0) {
                             question.options[question.options.length - 1] += ' ' + line;
                         }
@@ -415,15 +421,12 @@
 
                 // Clean up the question data
                 if (question.text && question.options.length > 0) {
-                    // Remove Qxxx codes from question text
                     question.text = question.text.replace(/Q\d+\s*/, '').trim();
                     
-                    // Clean options
                     question.options = question.options.map(opt => 
                         opt.replace(/^[A-Za-z]\)\s*/, '').replace(/^\d+\.\s*/, '').trim()
                     );
                     
-                    // Clean correct answer
                     if (question.correctAnswer) {
                         question.correctAnswer = question.correctAnswer
                             .replace(/^[A-Za-z]\)\s*/, '')
@@ -433,7 +436,6 @@
                             .trim();
                     }
                     
-                    // Clean explanation
                     question.explanation = question.explanation.trim();
                     
                     questions.push(question);
@@ -462,11 +464,17 @@
                 const isSelected = userAnswers[index] && userAnswers[index].includes(i);
                 optionsHTML += `
                     <div class="option ${isSelected ? 'selected' : ''}" onclick="toggleOption(${i})">
-                        <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleOption(${i})">
+                        <input type="${question.multipleAnswers ? 'checkbox' : 'radio'}" 
+                               name="question${index}" 
+                               ${isSelected ? 'checked' : ''}>
                         <span>${option}</span>
                     </div>
                 `;
             });
+
+            const multipleAnswersNote = question.multipleAnswers ? 
+                '<div class="multiple-answers-note">⚠️ Esta pregunta tiene múltiples respuestas correctas</div>' : 
+                '';
 
             container.innerHTML = `
                 <div class="question-card">
@@ -475,6 +483,7 @@
                         <span class="question-number">${question.id}</span>
                     </div>
                     <div class="question-text">${question.text}</div>
+                    ${multipleAnswersNote}
                     <div class="options" id="optionsContainer">
                         ${optionsHTML}
                     </div>
@@ -497,15 +506,28 @@
                 userAnswers[currentQuestion] = [];
             }
 
-            const index = userAnswers[currentQuestion].indexOf(optionIndex);
-            if (index > -1) {
-                userAnswers[currentQuestion].splice(index, 1);
+            const question = questions[currentQuestion];
+            
+            if (question.multipleAnswers) {
+                // For multiple answers, toggle the selection
+                const index = userAnswers[currentQuestion].indexOf(optionIndex);
+                if (index > -1) {
+                    userAnswers[currentQuestion].splice(index, 1);
+                } else {
+                    userAnswers[currentQuestion].push(optionIndex);
+                }
             } else {
-                userAnswers[currentQuestion].push(optionIndex);
+                // For single answer, replace the selection
+                userAnswers[currentQuestion] = [optionIndex];
             }
 
+            // Update UI
             const options = document.querySelectorAll('.option');
-            options[optionIndex].classList.toggle('selected');
+            options.forEach((option, i) => {
+                const isSelected = userAnswers[currentQuestion].includes(i);
+                option.classList.toggle('selected', isSelected);
+                option.querySelector('input').checked = isSelected;
+            });
         }
 
         document.getElementById('checkBtn').addEventListener('click', function() {
@@ -516,7 +538,20 @@
 
             const question = questions[currentQuestion];
             const selectedOptions = userAnswers[currentQuestion].map(i => question.options[i]).join(', ');
-            const isCorrect = selectedOptions === question.correctAnswer;
+            
+            // For multiple answer questions, check if all correct answers are selected
+            let isCorrect;
+            if (question.multipleAnswers) {
+                const correctAnswers = question.correctAnswer.split(',').map(a => a.trim());
+                const userSelected = userAnswers[currentQuestion].map(i => question.options[i]);
+                
+                // Check if user selected exactly the correct answers (no more, no less)
+                isCorrect = correctAnswers.length === userSelected.length && 
+                           correctAnswers.every(answer => userSelected.includes(answer));
+            } else {
+                // For single answer questions
+                isCorrect = selectedOptions === question.correctAnswer;
+            }
 
             const options = document.querySelectorAll('.option');
             options.forEach((option, i) => {
