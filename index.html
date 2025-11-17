@@ -3,588 +3,439 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oracle PL/SQL Practice Questions</title>
+    <title>PL/SQL Quiz</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 20px;
-            color: #333;
-            background-color: #f5f7fa;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
         .container {
-            max-width: 1000px;
+            max-width: 900px;
             margin: 0 auto;
             background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
         }
-        h1 {
+        
+        header {
+            background: linear-gradient(to right, #2c3e50, #4a6491);
+            color: white;
+            padding: 25px;
             text-align: center;
-            color: #2c3e50;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #3498db;
         }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .score-panel {
+            display: flex;
+            justify-content: space-between;
+            background-color: #34495e;
+            color: white;
+            padding: 15px 25px;
+            font-size: 1.1rem;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #ecf0f1;
+            margin: 0 25px;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, #2ecc71, #1abc9c);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .quiz-container {
+            padding: 25px;
+        }
+        
         .question {
             margin-bottom: 30px;
             padding: 20px;
-            border-left: 5px solid #3498db;
+            border-radius: 10px;
             background-color: #f8f9fa;
-            border-radius: 5px;
-            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #3498db;
         }
-        .question:hover {
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
+        
         .question-number {
             font-weight: bold;
             color: #3498db;
-            margin-bottom: 10px;
-            font-size: 1.2em;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
         }
+        
+        .question-number::before {
+            content: "Q";
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 50%;
+            margin-right: 10px;
+            font-size: 1rem;
+        }
+        
         .options {
-            margin: 15px 0;
+            margin: 20px 0;
         }
-        .answer {
-            font-weight: bold;
-            color: #27ae60;
-            margin: 10px 0;
-            padding: 10px;
-            background-color: #d5f4e6;
-            border-radius: 4px;
+        
+        .option {
+            margin: 12px 0;
+            padding: 12px 15px;
+            border-radius: 8px;
+            background-color: white;
+            border: 2px solid #e1e8ed;
+            transition: all 0.3s;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
         }
-        .explanation {
-            background-color: #e9ecef;
-            padding: 15px;
-            border-radius: 4px;
-            margin-top: 10px;
-            border-left: 3px solid #95a5a6;
+        
+        .option:hover {
+            border-color: #3498db;
+            background-color: #f0f8ff;
         }
+        
+        .option.selected {
+            border-color: #3498db;
+            background-color: #e1f0fa;
+        }
+        
+        .option input {
+            margin-right: 12px;
+            transform: scale(1.3);
+        }
+        
         .code {
             background-color: #2c3e50;
             color: #ecf0f1;
             padding: 15px;
-            border-radius: 4px;
+            border-radius: 8px;
             font-family: 'Courier New', monospace;
             white-space: pre-wrap;
-            margin: 10px 0;
+            margin: 15px 0;
             overflow-x: auto;
+            font-size: 0.95rem;
+            line-height: 1.5;
         }
         
-        /* Interactive elements */
-        .user-answer {
-            margin: 15px 0;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background-color: #f8f9fa;
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
         }
-        .user-answer button {
-            background-color: #3498db;
-            color: white;
+        
+        button {
+            padding: 12px 25px;
             border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            margin-top: 10px;
-            font-weight: bold;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
         }
-        .user-answer button:hover {
-            background-color: #2980b9;
+        
+        .check-btn {
+            background: linear-gradient(to right, #2ecc71, #1abc9c);
+            color: white;
         }
+        
+        .check-btn:hover {
+            background: linear-gradient(to right, #27ae60, #16a085);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .show-answer {
+            background: linear-gradient(to right, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .show-answer:hover {
+            background: linear-gradient(to right, #2980b9, #2573a7);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
         .feedback {
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 4px;
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
             font-weight: bold;
+            display: none;
         }
+        
         .correct {
             background-color: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
+            display: block;
         }
+        
         .incorrect {
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
+            display: block;
         }
-        .score-display {
-            position: sticky;
-            top: 20px;
-            background-color: #2c3e50;
-            color: white;
+        
+        .answer {
+            margin-top: 15px;
             padding: 15px;
+            background-color: #e8f4f8;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        .score-display h3 {
-            margin-top: 0;
-            color: #ecf0f1;
-        }
-        .question-controls {
-            margin-top: 10px;
-        }
-        .question-controls button {
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-right: 5px;
-            transition: background-color 0.3s;
-        }
-        .question-controls button:hover {
-            background-color: #5a6268;
-        }
-        .show-answer {
-            background-color: #17a2b8 !important;
-        }
-        .show-answer:hover {
-            background-color: #138496 !important;
-        }
-        .hidden {
+            border-left: 4px solid #3498db;
             display: none;
         }
-        .checkbox-option {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 8px;
-            padding: 8px;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
-        .checkbox-option:hover {
-            background-color: #e9ecef;
-        }
-        .checkbox-option input {
-            margin-right: 10px;
-            margin-top: 5px;
-            transform: scale(1.2);
-        }
-        .radio-option {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 8px;
-            padding: 8px;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
-        .radio-option:hover {
-            background-color: #e9ecef;
-        }
-        .radio-option input {
-            margin-right: 10px;
-            margin-top: 5px;
-            transform: scale(1.2);
-        }
-        .progress-bar {
-            height: 10px;
-            background-color: #e9ecef;
-            border-radius: 5px;
-            margin-top: 10px;
-            overflow: hidden;
-        }
-        .progress {
-            height: 100%;
-            background-color: #3498db;
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-        .quiz-summary {
-            text-align: center;
-            margin-top: 30px;
-            padding: 20px;
+        
+        .explanation {
+            margin-top: 15px;
+            padding: 15px;
             background-color: #f8f9fa;
             border-radius: 8px;
-            border: 1px solid #dee2e6;
+            border-left: 4px solid #95a5a6;
+            display: none;
         }
-        .reset-btn {
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 15px;
-            transition: background-color 0.3s;
-        }
-        .reset-btn:hover {
-            background-color: #c0392b;
-        }
-        .multiple-choice-note {
+        
+        .multiple-note {
             font-style: italic;
             color: #7f8c8d;
             margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+        
+        .summary {
+            text-align: center;
+            padding: 30px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .summary h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .reset-btn {
+            background: linear-gradient(to right, #e74c3c, #c0392b);
+            color: white;
+            margin-top: 20px;
+        }
+        
+        .reset-btn:hover {
+            background: linear-gradient(to right, #c0392b, #a93226);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .score-panel {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            button {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Oracle PL/SQL Practice Questions</h1>
+        <header>
+            <h1>PL/SQL Practice Questions</h1>
+            <p class="subtitle">Test your Oracle PL/SQL knowledge with interactive questions</p>
+        </header>
         
-        <div class="score-display">
-            <h3>Your Progress</h3>
-            <p>Correct: <span id="correct-count">0</span> / <span id="total-questions">5</span></p>
-            <p>Percentage: <span id="percentage">0%</span></p>
-            <div class="progress-bar">
-                <div class="progress" id="progress-bar"></div>
-            </div>
+        <div class="score-panel">
+            <div>Correct: <span id="correct-count">0</span> / <span id="total-questions">1</span></div>
+            <div>Score: <span id="percentage">0%</span></div>
         </div>
-
-        <!-- Question 1 - Multiple Answers -->
-        <div class="question" id="q1">
-            <div class="question-number">Question 1: Q101</div>
-            <p>Which of the following identifiers are valid in PL/SQL?</p>
-            <div class="multiple-choice-note">(Select all that apply)</div>
-            <div class="options">
-                <div class="checkbox-option">
-                    <input type="checkbox" id="q1-opt1" name="q1" value="1">
-                    <label for="q1-opt1">1. total#amount</label>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progress-bar"></div>
+        </div>
+        
+        <div class="quiz-container">
+            <!-- Question 1 -->
+            <div class="question" id="q1">
+                <div class="question-number">Q101</div>
+                <p>Which of the following identifiers are valid in PL/SQL?</p>
+                <div class="multiple-note">(Select all that apply)</div>
+                
+                <div class="options">
+                    <div class="option" onclick="toggleOption(1, 1)">
+                        <input type="checkbox" id="q1-opt1">
+                        <label for="q1-opt1">1. total#amount</label>
+                    </div>
+                    <div class="option" onclick="toggleOption(1, 2)">
+                        <input type="checkbox" id="q1-opt2">
+                        <label for="q1-opt2">2. 2nd_chance</label>
+                    </div>
+                    <div class="option" onclick="toggleOption(1, 3)">
+                        <input type="checkbox" id="q1-opt3">
+                        <label for="q1-opt3">3. employee-name</label>
+                    </div>
+                    <div class="option" onclick="toggleOption(1, 4)">
+                        <input type="checkbox" id="q1-opt4">
+                        <label for="q1-opt4">4. $_bonus</label>
+                    </div>
+                    <div class="option" onclick="toggleOption(1, 5)">
+                        <input type="checkbox" id="q1-opt5">
+                        <label for="q1-opt5">5. A1B2C3</label>
+                    </div>
+                    <div class="option" onclick="toggleOption(1, 6)">
+                        <input type="checkbox" id="q1-opt6">
+                        <label for="q1-opt6">6. #salary</label>
+                    </div>
+                    <div class="option" onclick="toggleOption(1, 7)">
+                        <input type="checkbox" id="q1-opt7">
+                        <label for="q1-opt7">7. my_variable</label>
+                    </div>
                 </div>
-                <div class="checkbox-option">
-                    <input type="checkbox" id="q1-opt2" name="q1" value="2">
-                    <label for="q1-opt2">2. 2nd_chance</label>
+                
+                <div class="controls">
+                    <button class="check-btn" onclick="checkAnswer(1, [1, 5, 7])">Check Answer</button>
+                    <button class="show-answer" onclick="showAnswer(1)">Show Answer</button>
                 </div>
-                <div class="checkbox-option">
-                    <input type="checkbox" id="q1-opt3" name="q1" value="3">
-                    <label for="q1-opt3">3. employee-name</label>
-                </div>
-                <div class="checkbox-option">
-                    <input type="checkbox" id="q1-opt4" name="q1" value="4">
-                    <label for="q1-opt4">4. $_bonus</label>
-                </div>
-                <div class="checkbox-option">
-                    <input type="checkbox" id="q1-opt5" name="q1" value="5">
-                    <label for="q1-opt5">5. A1B2C3</label>
-                </div>
-                <div class="checkbox-option">
-                    <input type="checkbox" id="q1-opt6" name="q1" value="6">
-                    <label for="q1-opt6">6. #salary</label>
-                </div>
-                <div class="checkbox-option">
-                    <input type="checkbox" id="q1-opt7" name="q1" value="7">
-                    <label for="q1-opt7">7. my_variable</label>
-                </div>
-            </div>
-            <div class="user-answer">
-                <button onclick="checkAnswer(1, ['1', '5', '7'])">Check Answer</button>
+                
                 <div class="feedback" id="feedback-1"></div>
-            </div>
-            <div class="question-controls">
-                <button class="show-answer" onclick="toggleAnswer(1)">Show Answer</button>
-            </div>
-            <div class="answer hidden" id="answer-1">Answer: 1, 5, and 7 (total#amount, A1B2C3, my_variable)</div>
-            <div class="explanation hidden" id="explanation-1">
-                <p><strong>Explanation:</strong></p>
-                <ul>
-                    <li>total#amount: Valid. It starts with a letter and contains only letters, numbers, underscores, and hash sign.</li>
-                    <li>2nd_chance: Invalid. It starts with a number, which is not allowed as the starting character in PL/SQL identifiers.</li>
-                    <li>employee-name: Invalid. It contains a hyphen, which is not allowed in PL/SQL identifiers.</li>
-                    <li>$_bonus: Invalid. It starts with a dollar sign, which is not allowed as the starting character in PL/SQL identifiers.</li>
-                    <li>A1B2C3: Valid. It starts with a letter and contains only letters and numbers.</li>
-                    <li>#salary: Invalid. It starts with a hash sign, which is not allowed as the starting character in PL/SQL identifiers.</li>
-                    <li>my_variable: Valid. It starts with a letter and contains only letters and underscores.</li>
-                </ul>
-                <p>Valid Identifiers: total#amount, A1B2C3, my_variable</p>
-                <p><strong>Topic:</strong> Recognize valid and invalid identifiers.</p>
-            </div>
-        </div>
-
-        <!-- Question 2 - Single Answer -->
-        <div class="question" id="q2">
-            <div class="question-number">Question 2: Q102</div>
-            <p>When declaring a VARCHAR2 variable in PL/SQL without specifying its size, what happens?</p>
-            <div class="options">
-                <div class="radio-option">
-                    <input type="radio" id="q2-opt1" name="q2" value="1">
-                    <label for="q2-opt1">It defaults to a size of 1.</label>
+                
+                <div class="answer" id="answer-1">
+                    <strong>Answer:</strong> 1, 5, and 7 (total#amount, A1B2C3, my_variable)
                 </div>
-                <div class="radio-option">
-                    <input type="radio" id="q2-opt2" name="q2" value="2">
-                    <label for="q2-opt2">It defaults to a maximum size of 4000.</label>
-                </div>
-                <div class="radio-option">
-                    <input type="radio" id="q2-opt3" name="q2" value="3">
-                    <label for="q2-opt3">It raises a compilation error.</label>
-                </div>
-                <div class="radio-option">
-                    <input type="radio" id="q2-opt4" name="q2" value="4">
-                    <label for="q2-opt4">The size becomes dynamic based on the assigned value.</label>
+                
+                <div class="explanation" id="explanation-1">
+                    <p><strong>Explanation:</strong></p>
+                    <ul>
+                        <li><strong>total#amount:</strong> Valid. It starts with a letter and contains only letters, numbers, underscores, and hash sign.</li>
+                        <li><strong>2nd_chance:</strong> Invalid. It starts with a number, which is not allowed as the starting character in PL/SQL identifiers.</li>
+                        <li><strong>employee-name:</strong> Invalid. It contains a hyphen, which is not allowed in PL/SQL identifiers.</li>
+                        <li><strong>$_bonus:</strong> Invalid. It starts with a dollar sign, which is not allowed as the starting character in PL/SQL identifiers.</li>
+                        <li><strong>A1B2C3:</strong> Valid. It starts with a letter and contains only letters and numbers.</li>
+                        <li><strong>#salary:</strong> Invalid. It starts with a hash sign, which is not allowed as the starting character in PL/SQL identifiers.</li>
+                        <li><strong>my_variable:</strong> Valid. It starts with a letter and contains only letters and underscores.</li>
+                    </ul>
+                    <p><strong>Topic:</strong> Recognize valid and invalid identifiers.</p>
                 </div>
             </div>
-            <div class="user-answer">
-                <button onclick="checkAnswer(2, '3')">Check Answer</button>
-                <div class="feedback" id="feedback-2"></div>
+            
+            <div class="summary" id="summary">
+                <h2>Quiz Complete!</h2>
+                <p>You've answered <span id="summary-correct">0</span> out of <span id="summary-total">1</span> questions correctly.</p>
+                <p>Your final score: <span id="final-percentage">0%</span></p>
+                <button class="reset-btn" onclick="resetQuiz()">Reset Quiz</button>
             </div>
-            <div class="question-controls">
-                <button class="show-answer" onclick="toggleAnswer(2)">Show Answer</button>
-            </div>
-            <div class="answer hidden" id="answer-2">Answer: It raises a compilation error.</div>
-            <div class="explanation hidden" id="explanation-2">
-                <p><strong>Explanation:</strong></p>
-                <p>In PL/SQL, when you declare a VARCHAR2 variable without specifying its size, the declaration will result in a compilation error. Unlike some other programming environments, PL/SQL requires that you explicitly specify the size for a VARCHAR2 variable when you declare it.</p>
-                <p>For example, the following declaration will result in an error:</p>
-                <div class="code">DECLARE
-    v_name VARCHAR2;
-BEGIN
-    NULL;
-END;</div>
-                <p>To correct this, you should specify the size:</p>
-                <div class="code">DECLARE
-    v_name VARCHAR2(50);
-BEGIN
-    NULL;
-END;</div>
-                <p><strong>Topic:</strong> Declaring PL/SQL Variables</p>
-            </div>
-        </div>
-
-        <!-- Question 3 - Single Answer -->
-        <div class="question" id="q3">
-            <div class="question-number">Question 3: Q103</div>
-            <p>What will be the output of the following code?</p>
-            <div class="code">set SERVEROUTPUT ON;
-declare
-    v_bool boolean := TRUE;
-begin
-    if v_bool then
-        dbms_output.put_line('Yes');
-    else
-        dbms_output.put_line('No');
-    end if;
-    
-    declare
-        v_bool boolean := FALSE;
-    begin
-        if v_bool then
-            dbms_output.put_line('Yes');
-        else
-            dbms_output.put_line('No');
-        end if;
-    end;
-end;</div>
-            <div class="options">
-                <div class="radio-option">
-                    <input type="radio" id="q3-opt1" name="q3" value="1">
-                    <label for="q3-opt1">Yes No</label>
-                </div>
-                <div class="radio-option">
-                    <input type="radio" id="q3-opt2" name="q3" value="2">
-                    <label for="q3-opt2">No Yes</label>
-                </div>
-                <div class="radio-option">
-                    <input type="radio" id="q3-opt3" name="q3" value="3">
-                    <label for="q3-opt3">Yes Yes</label>
-                </div>
-                <div class="radio-option">
-                    <input type="radio" id="q3-opt4" name="q3" value="4">
-                    <label for="q3-opt4">No No</label>
-                </div>
-            </div>
-            <div class="user-answer">
-                <button onclick="checkAnswer(3, '1')">Check Answer</button>
-                <div class="feedback" id="feedback-3"></div>
-            </div>
-            <div class="question-controls">
-                <button class="show-answer" onclick="toggleAnswer(3)">Show Answer</button>
-            </div>
-            <div class="answer hidden" id="answer-3">Answer: Yes No</div>
-        </div>
-
-        <!-- Question 4 - Single Answer -->
-        <div class="question" id="q4">
-            <div class="question-number">Question 4: Q104</div>
-            <p>Consider the following PL/SQL block:</p>
-            <div class="code">set SERVEROUTPUT ON;
-DECLARE
-    v_num NUMBER := 10;
-BEGIN
-    v_num := v_num + &bind_value;
-    IF v_num > 20 THEN
-        v_num := v_num - 10;
-    ELSIF v_num < 10 THEN
-        v_num := v_num + 10;
-    END IF;
-    DBMS_OUTPUT.PUT_LINE(v_num);
-END;</div>
-            <p>If the bind variable bind_value is set to -5, what will be the output?</p>
-            <div class="options">
-                <div class="radio-option">
-                    <input type="radio" id="q4-opt1" name="q4" value="1">
-                    <label for="q4-opt1">15</label>
-                </div>
-                <div class="radio-option">
-                    <input type="radio" id="q4-opt2" name="q4" value="2">
-                    <label for="q4-opt2">5</label>
-                </div>
-                <div class="radio-option">
-                    <input type="radio" id="q4-opt3" name="q4" value="3">
-                    <label for="q4-opt3">20</label>
-                </div>
-                <div class="radio-option">
-                    <input type="radio" id="q4-opt4" name="q4" value="4">
-                    <label for="q4-opt4">25</label>
-                </div>
-            </div>
-            <div class="user-answer">
-                <button onclick="checkAnswer(4, '1')">Check Answer</button>
-                <div class="feedback" id="feedback-4"></div>
-            </div>
-            <div class="question-controls">
-                <button class="show-answer" onclick="toggleAnswer(4)">Show Answer</button>
-            </div>
-            <div class="answer hidden" id="answer-4">Answer: 15</div>
-        </div>
-
-        <!-- Question 5 - Single Answer -->
-        <div class="question" id="q5">
-            <div class="question-number">Question 5: Q105</div>
-            <p>Examine the following PL/SQL code:</p>
-            <div class="code">set SERVEROUTPUT ON;
-DECLARE
-    v_number NUMBER := :bind_number;
-    v_string VARCHAR2(50);
-BEGIN
-    v_string := CASE
-        WHEN v_number BETWEEN 1 AND 5 THEN 'Range 1-5'
-        WHEN v_number BETWEEN 6 AND 10 THEN 'Range 6-10'
-        ELSE 'Out of Range'
-    END;
-    
-    FOR i IN 1 .. 3 LOOP
-        IF v_string = 'Range 6-10' AND i = 2 THEN
-            v_string := 'Middle Range';
-            CONTINUE;
-        END IF;
-        v_string := 'Iteration ' || i;
-    END LOOP;
-    DBMS_OUTPUT.PUT_LINE(v_string);
-END;</div>
-            <p>If the bind variable bind_number is set to 7, what will be the output?</p>
-            <div class="options">
-                <div class="radio-option">
-                    <input type="radio" id="q5-opt1" name="q5" value="1">
-                    <label for="q5-opt1">Range 6-10</label>
-                </div>
-                <div class="radio-option">
-                    <input type="radio" id="q5-opt2" name="q5" value="2">
-                    <label for="q5-opt2">Iteration 1</label>
-                </div>
-                <div class="radio-option">
-                    <input type="radio" id="q5-opt3" name="q5" value="3">
-                    <label for="q5-opt3">Middle Range</label>
-                </div>
-                <div class="radio-option">
-                    <input type="radio" id="q5-opt4" name="q5" value="4">
-                    <label for="q5-opt4">Iteration 3</label>
-                </div>
-            </div>
-            <div class="user-answer">
-                <button onclick="checkAnswer(5, '4')">Check Answer</button>
-                <div class="feedback" id="feedback-5"></div>
-            </div>
-            <div class="question-controls">
-                <button class="show-answer" onclick="toggleAnswer(5)">Show Answer</button>
-            </div>
-            <div class="answer hidden" id="answer-5">Answer: Iteration 3</div>
-            <div class="explanation hidden" id="explanation-5">
-                <p><strong>Explanation:</strong></p>
-                <ol>
-                    <li>The bind variable bind_number is set to 7</li>
-                    <li>The variable v_number is initialized with the value 7</li>
-                    <li>The CASE statement checks the value of v_number. Since v_number is 7, the condition WHEN v_number BETWEEN 6 AND 10 is TRUE. So, v_string is set to 'Range 6-10'</li>
-                    <li>The FOR loop runs 3 times</li>
-                    <li>On the first iteration (i = 1), the IF condition is not met, so v_string is set to 'Iteration 1'</li>
-                    <li>On the second iteration (i = 2), the IF condition v_string = 'Range 6-10' AND i = 2 is FALSE (because v_string was set to 'Iteration 1' in the previous loop). So, v_string is set to 'Iteration 2'</li>
-                    <li>On the third iteration (i = 3), the IF condition is not met again, so v_string is set to 'Iteration 3'</li>
-                    <li>Finally, DBMS_OUTPUT.PUT_LINE(v_string); will print the value of v_string, which is 'Iteration 3'</li>
-                </ol>
-                <p><strong>Topics:</strong> Declaring PL/SQL Variables, Writing Executable Statements, Writing Control Structures</p>
-            </div>
-        </div>
-
-        <div class="quiz-summary">
-            <h2>Quiz Complete!</h2>
-            <p>You've answered <span id="summary-correct">0</span> out of <span id="summary-total">5</span> questions correctly.</p>
-            <p>Your final score: <span id="final-percentage">0%</span></p>
-            <button class="reset-btn" onclick="resetQuiz()">Reset Quiz</button>
         </div>
     </div>
 
     <script>
         // Initialize score tracking
         let correctAnswers = 0;
-        const totalQuestions = 5;
+        const totalQuestions = 1;
         
-        // Function to check answers
-        function checkAnswer(questionNumber, correctAnswer) {
-            const feedback = document.getElementById(`feedback-${questionNumber}`);
-            let userAnswer;
+        // Track selected options for each question
+        const selectedOptions = {
+            1: []
+        };
+        
+        // Function to toggle option selection
+        function toggleOption(questionId, optionId) {
+            const optionElement = document.querySelector(`#q${questionId}-opt${optionId}`);
+            const optionContainer = optionElement.parentElement;
             
-            // Check if it's a multiple choice (radio) or multiple answer (checkbox) question
-            if (Array.isArray(correctAnswer)) {
-                // Multiple answer question (checkboxes)
-                userAnswer = [];
-                const checkboxes = document.querySelectorAll(`input[name="q${questionNumber}"]:checked`);
-                checkboxes.forEach(checkbox => {
-                    userAnswer.push(checkbox.value);
-                });
-                
-                // Sort arrays for comparison
-                userAnswer.sort();
-                const sortedCorrect = [...correctAnswer].sort();
-                
-                // Check if arrays are equal
-                const isCorrect = JSON.stringify(userAnswer) === JSON.stringify(sortedCorrect);
-                
-                if (isCorrect) {
-                    feedback.innerHTML = '<div class="correct">Correct! Well done.</div>';
-                    correctAnswers++;
-                    updateScore();
-                } else {
-                    feedback.innerHTML = `<div class="incorrect">Incorrect. Your answer: ${userAnswer.join(', ')}. Correct answer: ${correctAnswer.join(', ')}.</div>`;
+            if (optionElement.checked) {
+                optionElement.checked = false;
+                optionContainer.classList.remove('selected');
+                // Remove from selected options
+                const index = selectedOptions[questionId].indexOf(optionId);
+                if (index > -1) {
+                    selectedOptions[questionId].splice(index, 1);
                 }
             } else {
-                // Single answer question (radio buttons)
-                const selectedOption = document.querySelector(`input[name="q${questionNumber}"]:checked`);
-                
-                if (!selectedOption) {
-                    feedback.innerHTML = '<div class="incorrect">Please select an answer.</div>';
-                    return;
-                }
-                
-                userAnswer = selectedOption.value;
-                
-                if (userAnswer === correctAnswer) {
-                    feedback.innerHTML = '<div class="correct">Correct! Well done.</div>';
-                    correctAnswers++;
-                    updateScore();
-                } else {
-                    feedback.innerHTML = `<div class="incorrect">Incorrect. Your answer: ${userAnswer}. Correct answer: ${correctAnswer}.</div>`;
-                }
+                optionElement.checked = true;
+                optionContainer.classList.add('selected');
+                // Add to selected options
+                selectedOptions[questionId].push(optionId);
             }
         }
         
-        // Function to toggle answer visibility
-        function toggleAnswer(questionNumber) {
-            const answer = document.getElementById(`answer-${questionNumber}`);
-            const explanation = document.getElementById(`explanation-${questionNumber}`);
+        // Function to check answers
+        function checkAnswer(questionId, correctAnswersArray) {
+            const feedback = document.getElementById(`feedback-${questionId}`);
+            const userAnswers = selectedOptions[questionId];
             
-            if (answer.classList.contains('hidden')) {
-                answer.classList.remove('hidden');
-                if (explanation) explanation.classList.remove('hidden');
+            // Sort arrays for comparison
+            const sortedUserAnswers = [...userAnswers].sort();
+            const sortedCorrectAnswers = [...correctAnswersArray].sort();
+            
+            // Check if arrays are equal
+            const isCorrect = JSON.stringify(sortedUserAnswers) === JSON.stringify(sortedCorrectAnswers);
+            
+            if (isCorrect) {
+                feedback.innerHTML = '<div class="correct">Correct! Well done.</div>';
+                correctAnswers++;
+                updateScore();
             } else {
-                answer.classList.add('hidden');
-                if (explanation) explanation.classList.add('hidden');
+                feedback.innerHTML = `<div class="incorrect">Incorrect. Your answer: ${userAnswers.join(', ')}. Correct answer: ${correctAnswersArray.join(', ')}.</div>`;
             }
+            
+            // Show feedback
+            feedback.style.display = 'block';
+        }
+        
+        // Function to show answer
+        function showAnswer(questionId) {
+            const answer = document.getElementById(`answer-${questionId}`);
+            const explanation = document.getElementById(`explanation-${questionId}`);
+            
+            answer.style.display = 'block';
+            explanation.style.display = 'block';
         }
         
         // Function to update score display
@@ -595,6 +446,11 @@ END;</div>
             document.getElementById('percentage').textContent = `${percentage}%`;
             document.getElementById('final-percentage').textContent = `${percentage}%`;
             document.getElementById('progress-bar').style.width = `${percentage}%`;
+            
+            // Show summary if all questions are answered
+            if (correctAnswers === totalQuestions) {
+                document.getElementById('summary').style.display = 'block';
+            }
         }
         
         // Function to reset the quiz
@@ -602,24 +458,26 @@ END;</div>
             correctAnswers = 0;
             updateScore();
             
-            // Clear all selections and feedback
-            const inputs = document.querySelectorAll('input[type="radio"], input[type="checkbox"]');
-            inputs.forEach(input => {
-                input.checked = false;
+            // Clear all selections
+            selectedOptions[1] = [];
+            
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+                checkbox.parentElement.classList.remove('selected');
             });
             
             const feedbacks = document.querySelectorAll('.feedback');
             feedbacks.forEach(feedback => {
-                feedback.innerHTML = '';
+                feedback.style.display = 'none';
             });
             
             const answers = document.querySelectorAll('.answer, .explanation');
             answers.forEach(answer => {
-                answer.classList.add('hidden');
+                answer.style.display = 'none';
             });
             
-            // Scroll to top
-            window.scrollTo(0, 0);
+            document.getElementById('summary').style.display = 'none';
         }
         
         // Initialize score display
