@@ -353,95 +353,73 @@
         });
 
         function parseQuestions(text) {
-            const questionBlocks = text.split(/\n\d+\/\d+\s*\n/);
+            const lines = text.split('\n');
             questions = [];
+            let currentQuestion = null;
             
-            questionBlocks.forEach((block, index) => {
-                if (block.trim().length === 0) return;
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
                 
-                const lines = block.trim().split('\n');
-                let question = {
-                    id: `Q${index + 1}`,
-                    text: '',
-                    options: [],
-                    correctAnswer: '',
-                    explanation: '',
-                    multipleAnswers: false
-                };
-
-                let currentSection = 'question';
-                let optionNumber = 1;
-
-                for (let i = 0; i < lines.length; i++) {
-                    const line = lines[i].trim();
+                // Detect new question
+                if (line.startsWith('Q')) {
+                    if (currentQuestion && currentQuestion.text && currentQuestion.options.length > 0) {
+                        questions.push(currentQuestion);
+                    }
                     
-                    if (line.startsWith('Pregunta') || line.match(/^Q\d+/)) {
-                        continue;
+                    const questionId = line.split(':')[0];
+                    const questionText = line.split(':')[1] ? line.split(':')[1].trim() : '';
+                    
+                    currentQuestion = {
+                        id: questionId,
+                        text: questionText,
+                        options: [],
+                        correctAnswer: '',
+                        explanation: '',
+                        multipleAnswers: false
+                    };
+                    continue;
+                }
+                
+                if (currentQuestion) {
+                    // Check for options (not empty, not ANSWER, not EXPLANATION)
+                    if (line.length > 0 && 
+                        !line.startsWith('ANSWER') && 
+                        !line.startsWith('EXPLANATION') &&
+                        currentQuestion.correctAnswer === '') {
+                        currentQuestion.options.push(line);
                     }
-                    else if (line.match(/^[A-Za-z]\)/) || line.match(/^\d+\./)) {
-                        currentSection = 'options';
-                        question.options.push(line);
+                    // Check for answer
+                    else if (line.startsWith('ANSWER:')) {
+                        currentQuestion.correctAnswer = line.replace('ANSWER:', '').trim();
+                        // Check if multiple answers
+                        if (currentQuestion.correctAnswer.includes(',')) {
+                            currentQuestion.multipleAnswers = true;
+                        }
                     }
-                    else if (line.includes('ANSWER') || line.includes('answer') || line.includes('Respuesta correcta')) {
-                        currentSection = 'answer';
-                    }
-                    else if (line.includes('Explicación general') || line.includes('Explicacion general')) {
-                        currentSection = 'explanation';
-                    }
-                    else if (currentSection === 'question' && line.length > 0) {
-                        if (question.text.length > 0) question.text += ' ';
-                        question.text += line;
-                    }
-                    else if (currentSection === 'answer' && line.length > 0 && 
-                           !line.includes('ANSWER') && !line.includes('answer') &&
-                           !line.includes('Respuesta correcta')) {
-                        const answerMatch = line.match(/ANSWER:\s*(.+)/i) || line.match(/([A-Za-z0-9,].*)/);
-                        if (answerMatch) {
-                            question.correctAnswer = answerMatch[1].trim();
-                            // Check if multiple answers (contains commas or multiple letters)
-                            if (question.correctAnswer.includes(',') || question.correctAnswer.match(/[a-zA-Z]{2,}/)) {
-                                question.multipleAnswers = true;
+                    // Check for explanation
+                    else if (line.startsWith('EXPLANATION:')) {
+                        let explanation = line.replace('EXPLANATION:', '').trim();
+                        // Collect additional explanation lines
+                        for (let j = i + 1; j < lines.length; j++) {
+                            const nextLine = lines[j].trim();
+                            if (nextLine.startsWith('Q') || nextLine === '') {
+                                break;
                             }
+                            explanation += '\n' + nextLine;
+                            i = j;
                         }
-                    }
-                    else if (currentSection === 'explanation' && line.length > 0 && 
-                           !line.includes('Explicación general') && !line.includes('Explicacion general')) {
-                        if (question.explanation.length > 0) question.explanation += '\n';
-                        question.explanation += line;
-                    }
-                    else if (currentSection === 'options' && line.length > 0 && 
-                           !line.match(/^[A-Za-z]\)/) && !line.match(/^\d+\./) &&
-                           !line.includes('ANSWER') && !line.includes('answer') &&
-                           !line.includes('Explicación general') && !line.includes('Explicacion general')) {
-                        if (question.options.length > 0) {
-                            question.options[question.options.length - 1] += ' ' + line;
-                        }
+                        currentQuestion.explanation = explanation;
                     }
                 }
+            }
+            
+            // Add the last question
+            if (currentQuestion && currentQuestion.text && currentQuestion.options.length > 0) {
+                questions.push(currentQuestion);
+            }
 
-                // Clean up the question data
-                if (question.text && question.options.length > 0) {
-                    question.text = question.text.replace(/Q\d+\s*/, '').trim();
-                    
-                    question.options = question.options.map(opt => 
-                        opt.replace(/^[A-Za-z]\)\s*/, '').replace(/^\d+\.\s*/, '').trim()
-                    );
-                    
-                    if (question.correctAnswer) {
-                        question.correctAnswer = question.correctAnswer
-                            .replace(/^[A-Za-z]\)\s*/, '')
-                            .replace(/^\d+\.\s*/, '')
-                            .replace(/^answer\s*[a-z]?:\s*/, '')
-                            .replace(/^ANSWER\s*[A-Z]?:\s*/, '')
-                            .trim();
-                    }
-                    
-                    question.explanation = question.explanation.trim();
-                    
-                    questions.push(question);
-                }
-            });
-
+            console.log('Parsed questions:', questions);
+            
             if (questions.length > 0) {
                 stats.total = questions.length;
                 userAnswers = new Array(questions.length).fill(null);
@@ -537,30 +515,40 @@
             }
 
             const question = questions[currentQuestion];
-            const selectedOptions = userAnswers[currentQuestion].map(i => question.options[i]).join(', ');
+            const selectedOptions = userAnswers[currentQuestion].map(i => question.options[i]);
             
             // For multiple answer questions, check if all correct answers are selected
             let isCorrect;
             if (question.multipleAnswers) {
                 const correctAnswers = question.correctAnswer.split(',').map(a => a.trim());
-                const userSelected = userAnswers[currentQuestion].map(i => question.options[i]);
                 
                 // Check if user selected exactly the correct answers (no more, no less)
-                isCorrect = correctAnswers.length === userSelected.length && 
-                           correctAnswers.every(answer => userSelected.includes(answer));
+                isCorrect = correctAnswers.length === selectedOptions.length && 
+                           correctAnswers.every(answer => selectedOptions.includes(answer));
             } else {
                 // For single answer questions
-                isCorrect = selectedOptions === question.correctAnswer;
+                isCorrect = selectedOptions[0] === question.correctAnswer;
             }
 
+            // Color the options correctly
             const options = document.querySelectorAll('.option');
             options.forEach((option, i) => {
                 const optionText = question.options[i];
-                if (question.correctAnswer.includes(optionText)) {
+                
+                // Check if this option is correct
+                const isOptionCorrect = question.multipleAnswers ? 
+                    question.correctAnswer.split(',').map(a => a.trim()).includes(optionText) :
+                    optionText === question.correctAnswer;
+                
+                // Check if user selected this option
+                const userSelected = userAnswers[currentQuestion].includes(i);
+                
+                if (isOptionCorrect) {
                     option.classList.add('correct');
-                } else if (userAnswers[currentQuestion].includes(i)) {
+                } else if (userSelected) {
                     option.classList.add('incorrect');
                 }
+                
                 option.style.pointerEvents = 'none';
             });
 
@@ -593,6 +581,9 @@
         document.getElementById('nextBtn').addEventListener('click', function() {
             if (currentQuestion < questions.length - 1) {
                 showQuestion(currentQuestion + 1);
+            } else {
+                // End of exam
+                alert(`¡Examen completado!\nResultado: ${stats.correct}/${stats.total} correctas (${Math.round((stats.correct/stats.total)*100)}%)`);
             }
         });
 
