@@ -342,44 +342,100 @@
         });
 
         function parseQuestions(text) {
-            const questionBlocks = text.split(/Pregunta \d+:/);
+            // Split by question numbers like "1/65", "2/65", etc.
+            const questionBlocks = text.split(/\n\d+\/\d+\s*\n/);
             questions = [];
-
-            questionBlocks.forEach(block => {
+            
+            questionBlocks.forEach((block, index) => {
                 if (block.trim().length === 0) return;
-
+                
                 const lines = block.trim().split('\n');
-                const questionMatch = lines[0].match(/Q\d+\s+(.+)/);
-                if (!questionMatch) return;
-
-                const question = {
-                    id: questionMatch[0].match(/Q\d+/)[0],
-                    text: questionMatch[1],
+                let question = {
+                    id: `Q${index + 1}`,
+                    text: '',
                     options: [],
                     correctAnswer: '',
                     explanation: ''
                 };
 
-                let inExplanation = false;
-                let explanationText = '';
+                let currentSection = 'question';
+                let optionNumber = 1;
 
-                for (let i = 1; i < lines.length; i++) {
+                for (let i = 0; i < lines.length; i++) {
                     const line = lines[i].trim();
                     
-                    if (line.match(/^\d+\./)) {
-                        question.options.push(line.replace(/^\d+\./, '').trim());
-                    } else if (line.includes('Explicación general')) {
-                        inExplanation = true;
-                    } else if (inExplanation && line.length > 0 && !line.includes('Modo de práctica')) {
-                        explanationText += line + '\n';
-                    } else if (!inExplanation && question.options.length > 0 && line.length > 3 && !line.startsWith('Q')) {
-                        question.correctAnswer = line;
+                    if (line.startsWith('Pregunta') || line.match(/^Q\d+/)) {
+                        // Skip question headers
+                        continue;
+                    }
+                    else if (line.match(/^[A-Za-z]\)/) || line.match(/^\d+\./)) {
+                        // Options
+                        currentSection = 'options';
+                        question.options.push(line);
+                    }
+                    else if (line.includes('ANSWER') || line.includes('answer') || line.includes('Respuesta correcta')) {
+                        // Correct answer section
+                        currentSection = 'answer';
+                    }
+                    else if (line.includes('Explicación general') || line.includes('Explicacion general')) {
+                        // Explanation section
+                        currentSection = 'explanation';
+                    }
+                    else if (currentSection === 'question' && line.length > 0) {
+                        // Question text
+                        if (question.text.length > 0) question.text += ' ';
+                        question.text += line;
+                    }
+                    else if (currentSection === 'answer' && line.length > 0 && 
+                           !line.includes('ANSWER') && !line.includes('answer') &&
+                           !line.includes('Respuesta correcta')) {
+                        // Extract correct answer
+                        const answerMatch = line.match(/([A-Za-z0-9].*)/);
+                        if (answerMatch) {
+                            question.correctAnswer = answerMatch[1].trim();
+                        }
+                    }
+                    else if (currentSection === 'explanation' && line.length > 0 && 
+                           !line.includes('Explicación general') && !line.includes('Explicacion general') &&
+                           !line.includes('Modo de práctica')) {
+                        // Explanation text
+                        if (question.explanation.length > 0) question.explanation += '\n';
+                        question.explanation += line;
+                    }
+                    else if (currentSection === 'options' && line.length > 0 && 
+                           !line.match(/^[A-Za-z]\)/) && !line.match(/^\d+\./) &&
+                           !line.includes('ANSWER') && !line.includes('answer') &&
+                           !line.includes('Explicación general') && !line.includes('Explicacion general')) {
+                        // Continue option text
+                        if (question.options.length > 0) {
+                            question.options[question.options.length - 1] += ' ' + line;
+                        }
                     }
                 }
 
-                question.explanation = explanationText.trim();
-                
-                if (question.options.length > 0) {
+                // Clean up the question data
+                if (question.text && question.options.length > 0) {
+                    // Remove Qxxx codes from question text
+                    question.text = question.text.replace(/Q\d+\s*/, '').trim();
+                    
+                    // Clean options
+                    question.options = question.options.map(opt => 
+                        opt.replace(/^[A-Za-z]\)\s*/, '').replace(/^\d+\.\s*/, '').trim()
+                    );
+                    
+                    // Clean correct answer
+                    if (question.correctAnswer) {
+                        question.correctAnswer = question.correctAnswer
+                            .replace(/^[A-Za-z]\)\s*/, '')
+                            .replace(/^\d+\.\s*/, '')
+                            .replace(/^answer\s*[a-z]?:\s*/, '')
+                            .replace(/^ANSWER\s*[A-Z]?:\s*/, '')
+                            .trim();
+                    }
+                    
+                    // Clean explanation
+                    question.explanation = question.explanation.trim();
+                    
                     questions.push(question);
                 }
             });
@@ -391,6 +447,8 @@
                 document.getElementById('examSection').classList.remove('hidden');
                 showQuestion(0);
                 updateStats();
+            } else {
+                alert('No se pudieron cargar las preguntas. Verifica el formato del archivo.');
             }
         }
 
