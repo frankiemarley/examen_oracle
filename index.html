@@ -531,4 +531,539 @@ END;</div>
             <ul>
                 <li><strong>Using a simple AFTER UPDATE trigger on the table:</strong> While an AFTER UPDATE trigger can be used to log changes, it operates within the same transaction as the main DML operation. If the main transaction is rolled back, the changes made by the trigger will also be rolled back, making it unsuitable for independent auditing.</li>
                 <li><strong>Using a BEFORE UPDATE trigger with a COMMIT statement:</strong> COMMIT statements within triggers can lead to unexpected behavior and are generally not recommended. Additionally, BEFORE UPDATE triggers are used to modify or validate data before it's updated, not for logging purposes.</li>
-                <li><strong>Using
+                <li><strong>Using a trigger with PRAGMA AUTONOMOUS_TRANSACTION:</strong> PRAGMA AUTONOMOUS_TRANSACTION allows the trigger to execute its operations in a separate transaction from the calling transaction. This means that even if the main transaction is rolled back, the changes made in the autonomous transaction (like logging in the audit table) will be committed. This makes it ideal for auditing purposes.</li>
+                <li><strong>Using a stored procedure with a ROLLBACK statement:</strong> Using a ROLLBACK within a stored procedure will undo any changes made within that procedure. This is not suitable for logging changes as the audit entries would be rolled back.</li>
+            </ul>
+            <p><strong>Topic:</strong> Creating Compound, DDL, and Event Database Triggers</p>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">Question 18: Q118</div>
+        <p>Which two are true about the PLSCOPE_SETTINGS parameter?</p>
+        <div class="options">
+            <div class="option">The default value of PLSCOPE_SETTINGS is 'IDENTIFIERS:NONE'.</div>
+            <div class="option">Changing the PLSCOPE_SETTINGS parameter will retroactively analyze existing PL/SQL code.</div>
+            <div class="option">Setting it to 'NONE' ensures that identifier information is collected for all PL/SQL units.</div>
+            <div class="option">The parameter is used to aid in performance tuning by optimizing PL/SQL code.</div>
+            <div class="option">When set to 'IDENTIFIERS:ALL', it collects and stores information about all identifiers in a PL/SQL unit.</div>
+        </div>
+        <div class="answer">Answer: The default value of PLSCOPE_SETTINGS is 'IDENTIFIERS:NONE' and When set to 'IDENTIFIERS:ALL', it collects and stores information about all identifiers in a PL/SQL unit.</div>
+        <div class="explanation">
+            <p><strong>Explanation:</strong></p>
+            <ul>
+                <li><strong>The default value of PLSCOPE_SETTINGS is 'IDENTIFIERS:NONE':</strong> This statement is correct. By default, PLSCOPE_SETTINGS is set to 'IDENTIFIERS:NONE', which means that no identifier information is collected for PL/SQL units unless explicitly changed.</li>
+                <li><strong>When set to 'IDENTIFIERS:ALL', it collects and stores information about all identifiers in a PL/SQL unit:</strong> This statement is correct. Setting PLSCOPE_SETTINGS to 'IDENTIFIERS:ALL' instructs the PL/SQL compiler to collect and store information about all identifiers within a PL/SQL unit, aiding in code analysis and management.</li>
+                <li><strong>Changing the PLSCOPE_SETTINGS parameter will retroactively analyze existing PL/SQL code:</strong> This statement is incorrect. Changing PLSCOPE_SETTINGS affects only subsequent compilations of PL/SQL code. It does not retroactively analyze or alter previously compiled units.</li>
+                <li><strong>The parameter is used to aid in performance tuning by optimizing PL/SQL code:</strong> This statement is misleading. While the data provided by PL/Scope can be used in the context of performance tuning, the primary purpose of PL/Scope is code analysis and management, not direct performance optimization.</li>
+                <li><strong>Setting it to 'NONE' ensures that identifier information is collected for all PL/SQL units:</strong> This statement is incorrect. Setting PLSCOPE_SETTINGS to 'NONE' means no identifier information is collected.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">Question 19: Q119</div>
+        <p>Which four are true about the PLSQL_WARNINGS parameter? (Choose four.)</p>
+        <div class="options">
+            <div class="option">It allows for enabling, disabling, or treating PL/SQL compilation warnings as errors.</div>
+            <div class="option">The default value for PLSQL_WARNINGS is 'DISABLE:ALL'.</div>
+            <div class="option">If set to 'ERROR:ALL', any warning will result in a compilation error.</div>
+            <div class="option">The parameter only affects runtime warnings, not compilation warnings.</div>
+            <div class="option">The DBMS_WARNING package can be used to programmatically manage PLSQL_WARNINGS at the database or session level.</div>
+        </div>
+        <div class="answer">Answer: It allows for enabling, disabling, or treating PL/SQL compilation warnings as errors; The default value for PLSQL_WARNINGS is 'DISABLE:ALL'; If set to 'ERROR:ALL', any warning will result in a compilation error; The DBMS_WARNING package can be used to programmatically manage PLSQL_WARNINGS at the database or session level.</div>
+        <div class="explanation">
+            <p><strong>Explanation:</strong></p>
+            <p>PLSQL_WARNINGS parameter in Oracle Database 19c serves the purpose of enabling, disabling, or treating PL/SQL compilation warnings as errors. Here are the key points:</p>
+            <ul>
+                <li><strong>Functionality:</strong> PLSQL_WARNINGS controls the reporting of warning messages by the PL/SQL compiler. It specifies which warning messages should be shown and how they should be treated (as warnings or errors).</li>
+                <li><strong>Qualifiers:</strong> It includes qualifiers like ENABLE, DISABLE, and ERROR to manage specific warnings or sets of warnings.</li>
+                <li><strong>Modifiers:</strong> The parameter can be modified to apply these qualifiers to all warnings or to specific categories like SEVERE, INFORMATIONAL, or PERFORMANCE.</li>
+                <li><strong>Customization:</strong> It allows for a high degree of customization, enabling or disabling specific warnings or categories of warnings, and even treating certain warnings as errors.</li>
+            </ul>
+            <p>The default value of the PLSQL_WARNINGS parameter is 'DISABLE:ALL'. This setting means that all PL/SQL compilation warnings are disabled by default.</p>
+            <p>The parameter only affects compilation warnings, not runtime warnings.</p>
+            <p>If set to 'ERROR:ALL', any warning will result in a compilation error. Setting PLSQL_WARNINGS to 'ERROR:ALL' causes the compiler to treat all warnings as errors, which can halt compilation if any warning is generated.</p>
+            <p>The DBMS_WARNING package can be used to programmatically manage PLSQL_WARNINGS at the database or session level. The DBMS_WARNING package provides functionality to programmatically get and set the PLSQL_WARNINGS parameter values.</p>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">Question 20: Q120</div>
+        <p>Which of the following changes to a remote procedure's signature will NOT trigger a permanent invalidation in the signature dependency mode? Select one or more correct answers.</p>
+        <div class="options">
+            <div class="option">Changing the body of the remote procedure.</div>
+            <div class="option">Changing a parameter's datatype from VARCHAR to DATE.</div>
+            <div class="option">Explicitly specifying a parameter's mode (e.g., adding the "OUT" keyword).</div>
+            <div class="option">Changing a parameter's datatype from NUMBER to FLOAT.</div>
+        </div>
+        <div class="answer">Answer: Changing the body of the remote procedure and Changing a parameter's datatype from NUMBER to FLOAT</div>
+        <div class="explanation">
+            <p><strong>Explanation:</strong></p>
+            <ol>
+                <li>Changing the body of the remote procedure doesn't affect the signature and thus will not trigger an invalidation.</li>
+                <li>Changing a datatype from VARCHAR to DATE will trigger an invalidation.</li>
+                <li>Explicitly specifying a parameter's mode will trigger an invalidation.</li>
+                <li>Changing a parameter's datatype from NUMBER to FLOAT in a procedure does trigger the invalidation of dependent procedures in the signature dependency mode, but this invalidation is temporary and is resolved upon the first execution or recompilation of the dependent procedures.</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">Question 21: Q121</div>
+        <p>How can you minimize invalidation in Oracle?</p>
+        <div class="options">
+            <div class="option">Add new columns at the start of the table.</div>
+            <div class="option">Always add new procedures to the end of the package.</div>
+            <div class="option">Use more JOIN operations in your SQL queries and to disable the redo log feature</div>
+            <div class="option">Reference tables through views, as views have a higher chance of remaining valid after changes to the table.</div>
+        </div>
+        <div class="answer">Answer: Always add new procedures to the end of the package and Reference tables through views, as views have a higher chance of remaining valid after changes to the table.</div>
+        <div class="explanation">
+            <p><strong>Explanation:</strong></p>
+            <ul>
+                <li><strong>Always add new procedures to the end of the package:</strong> From a dependency management standpoint, the structure and order of procedures, functions, and other components inside a package can affect the dependencies of objects that reference this package. When a procedure or function is added somewhere other than the end of a package, it can potentially alter the structure of the package in such a way that dependent objects might become invalidated. By adding new procedures to the end of the package, we reduce the risk of inadvertently changing the structure in a way that would affect dependencies. Oracle Database consistently emphasizes on best practices to reduce the chances of invalidation, and one of them is ensuring that modifications to existing objects, including the addition of procedures to packages, are done in a manner that avoids unnecessary disruptions.</li>
+                <li><strong>Reference tables through views, as views have a higher chance of remaining valid after changes to the table:</strong> In Oracle, views act as an abstraction layer over tables. When the underlying structure of a table changes, direct references to that table might be invalidated, especially if they are accessing columns or structures that have changed. However, a view, unless explicitly modified or dropped, remains consistent in its structure. Thus, if a table's structure changes but the changes don't affect the columns or data represented by the view, any dependent objects on that view remain valid. In Oracle documentation, views are often recommended as a way to provide consistent access to data, even when the underlying data structures might be in flux. This abstraction helps in reducing the cascading effect of invalidations.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">Question 22: Q122</div>
+        <p>Which of the following scenarios will likely result in unsuccessful recompilation of a dependent object in Oracle?</p>
+        <div class="options">
+            <div class="option">When a referenced object is dropped or renamed, leaving no trace of the original object in the database.</div>
+            <div class="option">When a referenced column has another data type or is entirely dropped from the table.</div>
+            <div class="option">When the parameter list of a referenced procedure is modified.</div>
+            <div class="option">When a referenced view is replaced by another view with a different structure.</div>
+            <div class="option">When a new column is added to a referenced table, but it's not used in the dependent object.</div>
+        </div>
+        <div class="answer">Answer: When a referenced object is dropped or renamed, leaving no trace of the original object in the database; When a referenced column has another data type or is entirely dropped from the table; When the parameter list of a referenced procedure is modified; When a referenced view is replaced by another view with a different structure</div>
+        <div class="explanation">
+            <p><strong>Explanation:</strong></p>
+            <ol>
+                <li><strong>When a referenced object is dropped or renamed, leaving no trace of the original object in the database:</strong> If a dependent object, such as a procedure or function, references another database object, and that referenced object is dropped or renamed, the dependent object loses its connection to the original reference. Without the original reference, the dependent object cannot be successfully recompiled.</li>
+                <li><strong>When a referenced column has another data type or is entirely dropped from the table:</strong> Changing the data type of a column or dropping it altogether affects any object that references that column, especially if the object's logic is dependent on the original data type or the presence of the column. When this happens, recompilation of the dependent object can fail.</li>
+                <li><strong>When the parameter list of a referenced procedure is modified:</strong> Procedures and functions in Oracle accept parameters. If a dependent object references a procedure or function, and the parameter list of that procedure or function changes (for instance, if a parameter is added, removed, or its data type is changed), then the dependent object may no longer match its call to the referenced procedure or function. As such, recompilation will fail.</li>
+                <li><strong>When a referenced view is replaced by another view with a different structure:</strong> Views in Oracle present a "virtual table" based on the result-set of a SELECT statement. If a view is replaced and its structure changes (e.g., columns are added, removed, or renamed), then any dependent object referencing the original structure of the view will encounter issues during recompilation.</li>
+                <li><strong>When a new column is added to a referenced table, but it's not used in the dependent object:</strong> Contrary to the other options, the mere addition of a new column to a table, especially if it's not being used in a dependent object, doesn't automatically lead to unsuccessful recompilation.</li>
+            </ol>
+            <p><strong>Topic:</strong> Managing Dependencies</p>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">Question 23: Q123</div>
+        <p>Which practices help in maximizing the chances of successful recompilation once an object has become invalid? (Select TWO correct answers)</p>
+        <div class="options">
+            <div class="option">Always hardcoding data types for variables in the PL/SQL procedures and functions.</div>
+            <div class="option">Using the %TYPE attribute for variable declarations so they borrow the data type of a previously declared variable or table column.</div>
+            <div class="option">Using the %ROWTYPE attribute when working with records.</div>
+            <div class="option">Always using implicit cursors for all database operations.</div>
+        </div>
+        <div class="answer">Answer: Using the %TYPE attribute for variable declarations so they borrow the data type of a previously declared variable or table column and Using the %ROWTYPE attribute when working with records</div>
+        <div class="explanation">
+            <p><strong>Explanation:</strong></p>
+            <ul>
+                <li><strong>Always hardcoding data types for variables in the PL/SQL procedures and functions:</strong> Hardcoding data types does not necessarily help in successful recompilation. If a data type of a referenced column in a table changes, the hard-coded data type in a procedure or function would still mismatch, leading to unsuccessful recompilation. Using the %TYPE attribute as a best practice to ensure that the data type of the variable matches the data type of the column it references.</li>
+                <li><strong>Using the %TYPE attribute for variable declarations so they borrow the data type of a previously declared variable or table column:</strong> The %TYPE attribute allows a variable to inherit the data type of a table column or another previously declared variable. This dynamic determination of the data type ensures that if the data type of the referenced column changes, the variable in the PL/SQL block also changes accordingly, helping in successful recompilation. This recommendation is consistent with best practices outlined in Oracle documentation.</li>
+                <li><strong>Using the %ROWTYPE attribute when working with records:</strong> The %ROWTYPE attribute is useful when dealing with records in PL/SQL. It ensures that a PL/SQL record variable matches the structure of a row in the referenced table or view. If the structure of the table or view changes, the record variable will adjust accordingly during recompilation. This dynamic adaptation increases the chances of successful recompilation. The Oracle documentation recognizes %ROWTYPE as a way to define record types based on table or view columns.</li>
+                <li><strong>Always using implicit cursors for all database operations:</strong> The use of implicit versus explicit cursors does not directly impact the successful recompilation of an object.</li>
+            </ul>
+            <p><strong>Topic:</strong> Managing Dependencies</p>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">Question 24: Q124</div>
+        <p>In the context of PL/SQL, when might conditional compilation be beneficial?</p>
+        <div class="options">
+            <div class="option">To facilitate the enabling or disabling of debugging lines in code based on specific conditions or constants.</div>
+            <div class="option">To control the compilation behavior of PL/SQL units based on custom compiler flags.</div>
+            <div class="option">To enforce specific requirements during compilation, such as ensuring certain optimization levels.</div>
+            <div class="option">To encrypt PL/SQL source code for security purposes.</div>
+            <div class="option">To manage database connections and user sessions in PL/SQL.</div>
+        </div>
+        <div class="answer">Answer: To facilitate the enabling or disabling of debugging lines in code based on specific conditions or constants; To control the compilation behavior of PL/SQL units based on custom compiler flags; To enforce specific requirements during compilation, such as ensuring certain optimization levels</div>
+        <div class="explanation">
+            <p><strong>Explanation:</strong></p>
+            <ul>
+                <li><strong>To facilitate the enabling or disabling of debugging lines in code based on specific conditions or constants:</strong> Using conditional compilation, developers can control whether debugging lines, such as dbms_output.put_line, are included during compilation. A common practice is to define constants (e.g., for debugging) that can be checked using conditional compilation directives, allowing for flexibility in the code's behavior based on specific needs.</li>
+                <li><strong>To control the compilation behavior of PL/SQL units based on custom compiler flags:</strong> PL/SQL's conditional compilation allows for the use of "inquiry directives", which can refer to custom compiler flags. By setting these flags at the session or unit level, developers can influence how certain sections of the code are compiled.</li>
+                <li><strong>To enforce specific requirements during compilation, such as ensuring certain optimization levels:</strong> Conditional compilation in PL/SQL introduces directives like $ERROR, which can generate custom error messages during the compilation phase if specific conditions aren't met. For example, developers can enforce certain optimization levels and prevent compilation if these levels aren't achieved.</li>
+                <li><strong>To encrypt PL/SQL source code for security purposes:</strong> Conditional compilation is not a tool for encrypting or obfuscating PL/SQL source code. Oracle has other mechanisms, like wrapping, for obscuring PL/SQL code for security reasons.</li>
+                <li><strong>To manage database connections and user sessions in PL/SQL:</strong> Conditional compilation doesn't directly manage database connections or user sessions. Connection and session management in Oracle are handled through different mechanisms and tools, separate from the concept of conditional compilation.</li>
+            </ul>
+            <p><strong>Topic:</strong> Managing PL/SQL Code</p>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">Question 25: Q125</div>
+        <p>In which of the following scenarios would calls to protected subprograms that have the ACCESSIBLE BY clause fail?</p>
+        <div class="options">
+            <div class="option">When called via remote procedure call</div>
+            <div class="option">When called from a trigger in the same schema</div>
+            <div class="option">When called from within a conditional compilation directive</div>
+            <div class="option">When called from another package in a different schema</div>
+            <div class="option">When called from a public PL/SQL API</div>
+            <div class="option">When called from DBMS_SQL or dynamic SQL call</div>
+            <div class="option">When called from static SQL statements</div>
+        </div>
+        <div class="answer">Answer: When called via remote procedure call; When called from within a conditional compilation directive; When called from DBMS_SQL or dynamic SQL call; When called from static SQL statements</div>
+        <div class="explanation">
+            <p><strong>Explanation:</strong></p>
+            <ul>
+                <li><strong>When called via remote procedure call:</strong> Correct. Remote procedure calls (RPCs) in Oracle allow a procedure, function, or package to execute in a remote database. However, the ACCESSIBLE BY clause is designed to enforce security within the confines of a single database or schema by specifying which PL/SQL units are permitted to call a protected subprogram. When an RPC is made, the execution context shifts to the remote database, which may not recognize or enforce the ACCESSIBLE BY constraints defined in the originating database. This discrepancy can lead to a failure in the call due to the inability to validate the calling context against the ACCESSIBLE BY clause, underscoring potential security concerns when crossing database or schema boundaries.</li>
+                <li><strong>When called from a trigger in the same schema:</strong> Incorrect. The ACCESSIBLE BY clause, when used, specifies which PL/SQL units (like procedures, functions, or triggers) are allowed to call or invoke a particular subprogram. If a trigger from the same schema is explicitly listed in the ACCESSIBLE BY clause, it can call the subprogram. If not, it cannot. However, the mere act of calling from a trigger doesn't automatically make it fail.</li>
+                <li><strong>When called from within a conditional compilation directive:</strong> Correct. Conditional compilation in Oracle PL/SQL enables parts of the code to be compiled based on certain conditions. Since the ACCESSIBLE BY clause enforces access control at compile time, Oracle restricts calls from within conditional compilation directives to maintain the integrity of this access control mechanism.</li>
+                <li><strong>When called from another package in a different schema:</strong> Incorrect, with important considerations. The ACCESSIBLE BY clause is used to explicitly list the PL/SQL units that are allowed to access a given subprogram. This means that a package from a different schema can access the protected subprogram only if it is explicitly mentioned in the ACCESSIBLE BY clause of that subprogram. The schema difference is not the primary barrier; rather, it is whether the external package is granted explicit access via the ACCESSIBLE BY clause. This nuance is crucial for understanding how cross-schema access controls are managed in Oracle PL/SQL, emphasizing the clause's role in specifying allowed access regardless of schema boundaries.</li>
+                <li><strong>When called from a public PL/SQL API:</strong> Incorrect. The designation of a PL/SQL API as "public" suggests it is intended for wider accessibility. However, the ability of such a public API to call a protected subprogram is governed by the ACCESSIBLE BY clause, which must explicitly list the API or its components as allowed callers. The public nature of an API does not override the access restrictions imposed by the ACCESSIBLE BY clause. This ensures that even widely accessible APIs adhere to the same security constraints as other PL/SQL units, maintaining the integrity of protected subprograms by restricting access only to those explicitly permitted.</li>
+                <li><strong>When called from DBMS_SQL or dynamic SQL call:</strong> Correct. DBMS_SQL is an Oracle PL/SQL package that lets developers perform dynamic SQL operations. Dynamic SQL statements are formulated at runtime. Since the ACCESSIBLE BY clause enforces its access controls at compile time, Oracle disallows its usage with dynamic SQL to ensure these controls are not bypassed.</li>
+                <li><strong>When called from static SQL statements:</strong> Correct. Despite static SQL statements being pre-defined and known at compile time, the Oracle documentation specifies that the ACCESSIBLE BY clause enforces direct call constraints, meaning the subprogram must be called directly from the specified units. The clause's check fails if the access to the protected subprogram is through static SQL, as this does not constitute a direct call. Static SQL, despite its compile-time nature, involves indirect access to the subprogram, which violates the direct access requirement of the ACCESSIBLE BY clause. Therefore, attempts to call a protected subprogram through static SQL would fail due to the clause's restrictions on indirect access.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">Question 26: Q126</div>
+        <p>How can you enable compiler deprecation warnings in a PL/SQL session to see messages related to the use of deprecated entities?</p>
+        <div class="options">
+            <div class="option">Using ALTER SESSION SET PLSQL_WARNINGS='ENABLE:ALL'</div>
+            <div class="option">Using DBMS_WARNING.SET_WARNING_SETTING_STRING('ENABLE:ALL', 'SESSION')</div>
+            <div class="option">Using DBMS_WARNING.ADD_WARNING_SETTING_NUM(6019, 'ENABLE', 'SESSION')</div>
+            <div class="option">Using PRAGMA DEPRECATE('ENABLE: ALL')</div>
+            <div class="option">Calling DBMS_COMPILER.SET_WARNINGS ('ENABLE:ALL')</div>
+        </div>
+        <div class="answer">Answer: Using ALTER SESSION SET PLSQL_WARNINGS='ENABLE:ALL'; Using DBMS_WARNING.SET_WARNING_SETTING_STRING('ENABLE:ALL', 'SESSION'); Using DBMS_WARNING.ADD_WARNING_SETTING_NUM(6019, 'ENABLE', 'SESSION')</div>
+        <div class="explanation">
+            <p><strong>Explanation:</strong></p>
+            <ul>
+                <li><strong>Using ALTER SESSION SET PLSQL_WARNINGS='ENABLE:ALL':</strong> This command is used to alter the current session's behavior, and by specifying 'ENABLE:ALL', you are enabling all PL/SQL compiler warnings, including those related to deprecation.</li>
+                <li><strong>Using DBMS_WARNING.SET_WARNING_SETTING_STRING('ENABLE:ALL', 'SESSION'):</strong> The DBMS_WARNING package provides subprograms to manage PL/SQL warning settings. The SET_WARNING_SETTING_STRING procedure allows you to enable warnings for the session. By using 'ENABLE:ALL', all compiler warnings, including deprecation warnings, will be enabled.</li>
+                <li><strong>Using DBMS_WARNING.ADD_WARNING_SETTING_NUM(6019, 'ENABLE', 'SESSION'):</strong> The DBMS_WARNING package also provides the ADD_WARNING_SETTING_NUM procedure. By using this procedure with the specific warning number (e.g., 6019), you can enable specific compiler warnings related to deprecation for the session.</li>
+                <li><strong>Using PRAGMA DEPRECATE('ENABLE:ALL'):</strong> This is not a valid usage of the PRAGMA DEPRECATE directive. The directive is used to indicate that a PL/SQL entity is deprecated, not to enable warnings.</li>
+                <li><strong>Calling DBMS_COMPILER.SET_WARNINGS('ENABLE:ALL'):</strong> This option is incorrect as there isn't a DBMS_COMPILER.SET_WARNINGS procedure in standard Oracle PL/SQL. The correct package for handling warning settings is DBMS_WARNING.</li>
+            </ul>
+            <p><strong>Topic:</strong> Using the PL/SQL Compiler</p>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">Question 27: Q127</div>
+        <p>Consider the following PL/SQL code:</p>
+        <div class="code">CREATE OR REPLACE PROCEDURE test_ex(p_out OUT NOCOPY NUMBER, p_inout IN OUT NOCOPY VARCHAR2) IS
+BEGIN
+    p_out := 2;
+    p_inout := 'b';
+    RAISE VALUE_ERROR;
+END test_ex;
+
+DECLARE
+    l_out NUMBER;
+    l_inout VARCHAR2(10);
+BEGIN
+    l_out := 1;
+    l_inout := 'a';
+    test_ex(l_out, l_inout);
+    dbms_output.put_line('l_out:'||l_out||'l_inout:'||l_inout);
+EXCEPTION
+    WHEN OTHERS THEN
+        dbms_output.put_line('Error l_out:'||l_out||'l_inout:'||l_inout);
+END;</div>
+        <p>If an error occurs within the test_ex procedure, what will be the output of the anonymous block?</p>
+        <div class="options">
+            <div class="option">l_out:1 l_inout:a</div>
+            <div class="option">l_out:2 l_inout:b</div>
+            <div class="option">Error l_out:1 l_inout:a</div>
+            <div class="option">Error l_out:2 l_inout:b</div>
+        </div>
+        <div class="answer">Answer: Error l_out:2 l_inout:b</div>
+        <div class="explanation">
+            <p><strong>Explanation:</strong></p>
+            <p>When parameters are marked with the NOCOPY hint and passed by reference, modifications to the formal parameters within the subprogram will directly reflect in the actual parameters, even if an exception occurs. In the above code, the values of p_out and p_inout are changed to 2 and 'b' respectively. However, an error (VALUE_ERROR) is raised immediately after. Despite the exception, the actual parameters (l_out and l_inout) have already been updated. Therefore, the output will display the modified values along with the error message, resulting in Error l_out:2 l_inout:b.</p>
+            <p><strong>Topic:</strong> Using PL/SQL Subprograms</p>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">Question 28: Q128</div>
+        <p>Given the following Oracle function that employs the PARALLEL_ENABLE clause:</p>
+        <div class="code">CREATE OR REPLACE FUNCTION fetch_data(p_cursor IN SYS_REFCURSOR)
+RETURN NUMBER TABLE
+PIPELINED
+PARALLEL_ENABLE (PARTITION p_cursor BY ANY)
+IS
+    v_number NUMBER;
+BEGIN
+    LOOP
+        FETCH p_cursor INTO v_number;
+        EXIT WHEN p_cursor%NOTFOUND;
+        PIPE ROW (v_number);
+    END LOOP;
+    CLOSE p_cursor;
+    RETURN;
+END fetch_data;</div>
+        <p>Which statement accurately describes the behavior of this function in a parallel query operation?</p>
+        <div class="options">
+            <div class="option">The function fetch_data will only process a specific range of rows from p_cursor.</div>
+            <div class="option">The function fetch_data will be executed serially without any parallelism.</div>
+            <div class="option">The data from p_cursor will be partitioned randomly among the parallel execution servers.</div>
+            <div class="option">The function fetch_data will return data in the exact order as fetched from p_cursor.</div>
+        </div>
+        <div class="answer">Answer: The data from p_cursor will be partitioned randomly among the parallel execution servers.</div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">Question 29: Q129</div>
+        <p>Which three are true about the AUTONOMOUS_TRANSACTION pragma, the STRICT keyword with associative arrays, and the UROWID datatype in Oracle?</p>
+        <div class="options">
+            <div class="option">The AUTONOMOUS_TRANSACTION pragma allows a transaction to be committed independently of its parent transaction.</div>
+            <div class="option">The STRICT keyword ensures that an associative array always has a sequence of consecutive numbers as its index, starting from 1.</div>
+            <div class="option">UROWID can store both logical and physical rowids.</div>
+            <div class="option">The AUTONOMOUS_TRANSACTION pragma enables the transaction to roll back changes made in its parent transaction.</div>
+            <div class="option">Associative arrays indexed by a string in PL/SQL can't use the STRICT keyword.</div>
+            <div class="option">UROWID is used exclusively for storing logical rowids.</div>
+            <div class="option">Associative arrays with STRICT keyword throws NO_DATA_FOUND exception when an uninitialized element is accessed.</div>
+        </div>
+        <div class="answer">Answer: The AUTONOMOUS_TRANSACTION pragma allows a transaction to be committed independently of its parent transaction; UROWID can store both logical and physical rowids; Associative arrays indexed by a string in PL/SQL can't use the STRICT keyword</div>
+        <div class="explanation">
+            <p><strong>Explanation:</strong></p>
+            <ul>
+                <li><strong>The AUTONOMOUS_TRANSACTION pragma allows a transaction to be committed independently of its parent transaction:</strong> Correct. The AUTONOMOUS_TRANSACTION pragma allows a PL/SQL block (procedure, function, or anonymous block) to execute independently of its parent transaction. This means that changes inside the block can be committed or rolled back separately, without affecting the parent transaction.</li>
+                <li><strong>The STRICT keyword ensures that an associative array always has a sequence of consecutive numbers as its index, starting from 1:</strong> Incorrect. The STRICT keyword does not exist in Oracle PL/SQL for associative arrays. Associative arrays do not enforce consecutive numbering, and they can have gaps in their indexes. Oracle does not support STRICT mode for associative arrays like some other languages do.</li>
+                <li><strong>UROWID can store both logical and physical rowids:</strong> Correct. UROWID (Universal ROWID) is a datatype in Oracle that can store both physical and logical rowids. Physical ROWIDs exist in heap-organized tables, storing the row's physical location. Logical ROWIDs exist in index-organized tables (IOTs), where rows are stored inside an index instead of a heap.</li>
+                <li><strong>The AUTONOMOUS_TRANSACTION pragma enables the transaction to roll back changes made in its parent transaction:</strong> Incorrect. The AUTONOMOUS_TRANSACTION pragma allows a transaction to be separate and independent of its parent, but it doesn't have the ability to roll back changes in the parent transaction.</li>
+                <li><strong>Associative arrays indexed by a string in PL/SQL can't use the STRICT keyword:</strong> Correct. Oracle does not have a STRICT keyword for associative arrays. Associative arrays can be indexed by either strings or integers, but the way they behave does not depend on a STRICT mode. Associative arrays indexed by a string do not require consecutive numbering and have no restrictions similar to "strict mode" in other languages.</li>
+                <li><strong>UROWID is used exclusively for storing logical rowids:</strong> Incorrect. UROWID can store both physical and logical rowids. It is not exclusive to logical rowids. Physical ROWIDs exist in heap-organized tables. Logical ROWIDs exist in index-organized tables (IOTs).</li>
+                <li><strong>Associative arrays with STRICT keyword throws NO_DATA_FOUND exception when an uninitialized element is accessed:</strong> Incorrect. Oracle PL/SQL does not support the STRICT keyword for associative arrays. Accessing an uninitialized index in an associative array does not raise NO_DATA_FOUND automatically; it returns NULL. If you want to enforce strict behavior, you must manually check if an index exists.</li>
+            </ul>
+            <p><strong>Topics:</strong> Working with Composite Data Types</p>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">Question 30: Q132</div>
+        <p>Consider the following strategies for handling exceptions in Oracle PL/SQL:</p>
+        <ol>
+            <li>Eliminate bugs that cause exceptions.</li>
+            <li>Let the program crash and let the exception flow up to the calling side.</li>
+            <li>Catch the exception, log it, and proceed as if nothing happened.</li>
+            <li>Catch the exception, log it, and then re-raise it to propagate it up the call stack.</li>
+        </ol>
+        <p>Given these strategies, analyze the following code snippet:</p>
+        <div class="code">CREATE OR REPLACE PROCEDURE get_phone_number(emp_last_name IN VARCHAR2, emp_phone_number OUT VARCHAR2) IS
+BEGIN
+    SELECT phone_number INTO emp_phone_number FROM employees WHERE last_name = emp_last_name;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        -- Logging the error
+        INSERT INTO error_log (error_message, error_code) VALUES ('No data found for given last name', SQLCODE);
+        RAISE;
+END;</div>
+        <p>Which of the above strategies does this code snippet most closely follow?</p>
+        <div class="options">
+            <div class="option">Strategy 1</div>
+            <div class="option">Strategy 2</div>
+            <div class="option">Strategy 3</div>
+            <div class="option">Strategy 4</div>
+        </div>
+        <div class="answer">Answer: Strategy 4</div>
+        <div class="explanation">
+            <p><strong>Explanation:</strong></p>
+            <p>The provided code snippet follows Strategy 4. When a NO_DATA_FOUND exception is encountered, the procedure logs the error to an error_log table and then uses the RAISE command to re-raise the exception, propagating it to the calling environment. This matches the description of Strategy 4 where exceptions are caught, logged, and then re-raised to be handled by the calling environment or procedure.</p>
+            <p><strong>Topic:</strong> Handling Exceptions in Oracle PL/SQL</p>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">Question 32: Q133</div>
+        <p>You are reviewing a procedure written by a colleague in Oracle's SQL Developer. The procedure aims to dynamically create a table based on a name passed to it. If a table with the given name already exists, the procedure should catch this error and display an appropriate message.</p>
+        <p>Here is the procedure your colleague wrote:</p>
+        <div class="code">CREATE OR REPLACE PROCEDURE create_dyn_table (table_name VARCHAR2) AS
+    table_already_exists EXCEPTION;
+    PRAGMA EXCEPTION_INT(table_already_exists, -955);
+BEGIN
+    EXECUTE IMMEDIATE 'CREATE TABLE ' || table_name || '(id NUMBER)';
+EXCEPTION
+    WHEN table_already_exists THEN
+        DBMS_OUTPUT.PUT_LINE('Table ' || table_name || ' already exists.');
+END;</div>
+        <p>You notice an error in the code. How would you correct it?</p>
+        <div class="options">
+            <div class="option">Replace EXCEPTION_INT with EXCEPTION_INIT</div>
+            <div class="option">Replace -955 with 955</div>
+            <div class="option">Replace EXECUTE IMMEDIATE with EXECUTE IMMEDIATELY</div>
+            <div class="option">Replace table_already_exists EXCEPTION; with table_already_exists EXCEPTION = -955;</div>
+        </div>
+        <div class="answer">Answer: Replace EXCEPTION_INT with EXCEPTION_INIT</div>
+        <div class="explanation">
+            <p><strong>Explanation:</strong></p>
+            <p>The PRAGMA EXCEPTION_INIT directive is used to associate a user-defined exception name with an Oracle error number. In the provided code, the typo EXCEPTION_INT should be corrected to EXCEPTION_INIT. The other options do not address the actual issue in the code and are not consistent with Oracle documentation.</p>
+            <p><strong>Topic:</strong> Handling Exceptions</p>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">Question 33: Q134</div>
+        <p>Review the PL/SQL code snippet below:</p>
+        <div class="code">DECLARE
+    employee_age_invalid EXCEPTION;
+    employee_age NUMBER := 15;
+BEGIN
+    IF employee_age < 18 THEN
+        RAISE employee_age_invalid;
+    END IF;
+EXCEPTION
+    WHEN employee_age_invalid THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Employee age is below the allowed limit.');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An unknown error occurred.');
+END;</div>
+        <p>In the code provided, an exception employee_age_invalid is raised if an employee's age is below 18. The code then uses the RAISE_APPLICATION_ERROR procedure to report a custom error message.</p>
+        <p>Which of the following statements are correct about the code?</p>
+        <div class="options">
+            <div class="option">The exception employee_age_invalid, when unhandled, would be reported by Oracle as ORA-06510</div>
+            <div class="option">The error code -20002 used in RAISE_APPLICATION_ERROR is not within the allowed range for custom exceptions</div>
+            <div class="option">If a different exception, not specifically defined, is raised, the message 'An unknown error occurred' would be printed.</div>
+            <div class="option">It is mandatory to use a predefined exception with the RAISE keyword.</div>
+        </div>
+        <div class="answer">Answer: The exception employee_age_invalid, when unhandled, would be reported by Oracle as ORA-06510 and If a different exception, not specifically defined, is raised, the message 'An unknown error occurred' would be printed.</div>
+        <div class="explanation">
+            <p><strong>Explanation:</strong></p>
+            <ul>
+                <li>When user-defined exceptions are raised without a preceding error, the exception number is not defined by Oracle, and it's associated with the Oracle error number ORA-06510.</li>
+                <li>The range -20000 to -20999 is reserved for user-defined exceptions, so -20002 is within the allowed range.</li>
+                <li>If an exception not specifically caught by the exception handlers in the code is raised, the message 'An unknown error occurred.' would be printed due to the "WHEN OTHERS" clause.</li>
+                <li>It is not mandatory to use a predefined exception with the RAISE keyword. You can define and raise your own exceptions using the RAISE keyword.</li>
+            </ul>
+            <p><strong>Topic:</strong> Handling Exceptions</p>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">Question 34: Q136</div>
+        <p>Consider the following SQL block used for inserting data into a table:</p>
+        <div class="code">DECLARE
+    v_dept_id NUMBER;
+    v_dept_name VARCHAR2(50);
+    v_sql VARCHAR2(200);
+BEGIN
+    v_dept_id := 101;
+    v_dept_name := 'Research';
+    v_sql := 'INSERT INTO departments (dept_id, dept_name) VALUES (' || v_dept_id || ', ''' || v_dept_name || ''')';
+    EXECUTE IMMEDIATE v_sql;
+END;</div>
+        <p>Which of the following blocks correctly refactors the above code to use the USING clause in Dynamic SQL, making it more readable and secure?</p>
+        <div class="options">
+            <div class="option">
+                <div class="code">DECLARE
+    v_dept_id NUMBER;
+    v_dept_name VARCHAR2(50);
+    v_sql VARCHAR2(200);
+BEGIN
+    v_dept_id := 101;
+    v_dept_name := 'Research';
+    v_sql := 'INSERT INTO departments (dept_id, dept_name) VALUES (:1, :2)';
+    EXECUTE IMMEDIATE v_sql USING v_dept_id, v_dept_name;
+END;</div>
+            </div>
+            <div class="option">
+                <div class="code">DECLARE
+    v_dept_id NUMBER;
+    v_dept_name VARCHAR2(50);
+    v_sql VARCHAR2(200);
+BEGIN
+    v_dept_id := 101;
+    v_dept_name := 'Research';
+    v_sql := 'INSERT INTO departments (dept_id, dept_name) VALUES (' || v_dept_id || ', ''' || v_dept_name || ''')';
+    EXECUTE IMMEDIATE v_sql;
+END;</div>
+            </div>
+            <div class="option">
+                <div class="code">DECLARE
+    v_dept_id NUMBER;
+    v_dept_name VARCHAR2(50);
+    v_sql VARCHAR2(200);
+BEGIN
+    v_dept_id := 101;
+    v_dept_name := 'Research';
+    v_sql := 'INSERT INTO departments (dept_id, dept_name) VALUES (?, ?)';
+    EXECUTE IMMEDIATE v_sql USING v_dept_id, v_dept_name;
+END;</div>
+            </div>
+            <div class="option">
+                <div class="code">DECLARE
+    v_dept_id NUMBER;
+    v_dept_name VARCHAR2(50);
+    v_sql VARCHAR2(200);
+BEGIN
+    v_dept_id := 101;
+    v_dept_name := 'Research';
+    v_sql := 'INSERT INTO departments (dept_id, dept_name) VALUES (:dept_id, :dept_name)';
+    EXECUTE IMMEDIATE v_sql;
+END;</div>
+            </div>
+        </div>
+        <div class="answer">Answer: Option A</div>
+        <div class="explanation">
+            <p><strong>Explanation:</strong></p>
+            <ul>
+                <li><strong>A) Correct.</strong> This code correctly refactors the original to use the USING clause with placeholders :1 and :2.</li>
+                <li><strong>B) Incorrect.</strong> This code still uses string concatenation without the USING clause.</li>
+                <li><strong>C) Incorrect.</strong> This block mistakenly uses ? as placeholders, which is not the correct syntax for Oracle SQL.</li>
+                <li><strong>D) Incorrect.</strong> This block does not provide the values for the placeholders :dept_id and :dept_name during the EXECUTE IMMEDIATE command.</li>
+            </ul>
+            <p><strong>Topic:</strong> Using Dynamic SQL</p>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">Question 35: Q137</div>
+        <p>Given the following procedure designed to delete rows from a table based on a provided identifier:</p>
+        <div class="code">CREATE OR REPLACE PROCEDURE delete_by_id(p_id VARCHAR2, p_table_name VARCHAR2) AS
+BEGIN
+    EXECUTE IMMEDIATE 'DELETE FROM ' || p_table_name || ' WHERE id = ' || p_id;
+END;</div>
+        <p>Which of the following procedures effectively addresses the potential SQL injection vulnerability present in the initial procedure?</p>
+        <div class="options">
+            <div class="option">
+                <div class="code">CREATE OR REPLACE PROCEDURE delete_by_id(p_id VARCHAR2, p_table_name VARCHAR2) AS
+BEGIN
+    EXECUTE IMMEDIATE 'DELETE FROM ' || DBMS_ASSERT.ENQUOTE_LITERAL(p_table_name) || ' WHERE id = ' || DBMS_ASSERT.ENQUOTE_LITERAL(p_id);
+END;</div>
+            </div>
+            <div class="option">
+                <div class="code">CREATE OR REPLACE PROCEDURE delete_by_id(p_id VARCHAR2, p_table_name VARCHAR2) AS
+BEGIN
+    EXECUTE IMMEDIATE 'DELETE FROM ' || p_table_name || ' WHERE id = ' || p_id;
+END;</div>
+            </div>
+            <div class="option">
+                <div class="code">CREATE OR REPLACE PROCEDURE delete_by_id(p_id VARCHAR2, p_table_name VARCHAR2) AS
+    v_sql VARCHAR2(200);
+BEGIN
+    v_sql := 'DELETE FROM ' || p_table_name || ' WHERE id = :id_val';
+    EXECUTE IMMEDIATE v_sql USING p_id;
+END;</div>
+            </div>
+            <div class="option">
+                <div class="code">CREATE OR REPLACE PROCEDURE delete_by_id(p_id VARCHAR2, p_table_name VARCHAR2) AS
+BEGIN
+    EXECUTE IMMEDIATE 'DELETE FROM ' || DBMS_ASSERT.SIMPLE_SQL_NAME(p_table_name) || ' WHERE id = ' || p_id;
+END;</div>
+            </div>
+        </div>
+        <div class="answer">Answer: Option C</div>
+        <div class="explanation">
+            <p><strong>Explanation:</strong></p>
+            <ul>
+                <li><strong>Use DBMS_ASSERT.SIMPLE_SQL_NAME for validating object names like table names.</strong></li>
+                <li><strong>Use bind variables (:param) for user input values like IDs.</strong></li>
+                <li><strong>Never use DBMS_ASSERT.ENQUOTE_LITERAL on table names.</strong></li>
+            </ul>
+            <p><strong>Topics:</strong> Using Dynamic SQL, Writing Executable Statements, Design Considerations for PL/SQL Code, Managing PL/SQL Code</p>
+        </div>
+    </div>
+</body>
+</html>
