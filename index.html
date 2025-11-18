@@ -3,495 +3,547 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PL/SQL Quiz</title>
+    <title>PL/SQL Exam - Part 1</title>
     <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-sizing: border-box;
         }
         
         body {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            color: #333;
-            line-height: 1.6;
-            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            padding: 20px;
         }
         
         .container {
             max-width: 900px;
             margin: 0 auto;
-            background-color: white;
+            background: white;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-        }
-        
-        header {
-            background: linear-gradient(to right, #2c3e50, #4a6491);
-            color: white;
-            padding: 25px;
-            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 30px;
         }
         
         h1 {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-        }
-        
-        .subtitle {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-        
-        .score-panel {
-            display: flex;
-            justify-content: space-between;
-            background-color: #34495e;
-            color: white;
-            padding: 15px 25px;
-            font-size: 1.1rem;
-        }
-        
-        .progress-bar {
-            height: 8px;
-            background-color: #ecf0f1;
-            margin: 0 25px;
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
         }
         
         .progress {
+            background: #e0e0e0;
+            height: 8px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #667eea, #764ba2);
             height: 100%;
-            background: linear-gradient(to right, #2ecc71, #1abc9c);
-            width: 0%;
-            transition: width 0.5s ease;
+            transition: width 0.3s ease;
         }
         
-        .quiz-container {
-            padding: 25px;
-        }
-        
-        .question {
-            margin-bottom: 30px;
-            padding: 20px;
-            border-radius: 10px;
-            background-color: #f8f9fa;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-left: 5px solid #3498db;
-        }
-        
-        .question-number {
+        .question-header {
+            font-size: 18px;
             font-weight: bold;
-            color: #3498db;
+            color: #333;
             margin-bottom: 15px;
-            font-size: 1.3rem;
-            display: flex;
-            align-items: center;
         }
         
-        .question-number::before {
-            content: "Q";
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px;
-            height: 30px;
-            background-color: #3498db;
-            color: white;
-            border-radius: 50%;
-            margin-right: 10px;
-            font-size: 1rem;
+        .question-text {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .code-box {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            white-space: pre;
+            display: none;
+        }
+        
+        .code-box.show {
+            display: block;
         }
         
         .options {
-            margin: 20px 0;
+            margin-bottom: 20px;
         }
         
         .option {
-            margin: 12px 0;
-            padding: 12px 15px;
+            background: #f9f9f9;
+            border: 2px solid #ddd;
             border-radius: 8px;
-            background-color: white;
-            border: 2px solid #e1e8ed;
-            transition: all 0.3s;
+            padding: 12px 15px;
+            margin-bottom: 10px;
             cursor: pointer;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
         }
         
         .option:hover {
-            border-color: #3498db;
-            background-color: #f0f8ff;
+            background: #f0f0f0;
+            border-color: #667eea;
         }
         
-        .option.selected {
-            border-color: #3498db;
-            background-color: #e1f0fa;
+        .option input[type="checkbox"],
+        .option input[type="radio"] {
+            margin-right: 10px;
+            cursor: pointer;
         }
         
-        .option input {
-            margin-right: 12px;
-            transform: scale(1.3);
+        .option.correct {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
         }
         
-        .code {
-            background-color: #2c3e50;
-            color: #ecf0f1;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            white-space: pre-wrap;
-            margin: 15px 0;
-            overflow-x: auto;
-            font-size: 0.95rem;
-            line-height: 1.5;
+        .option.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
         }
         
-        .controls {
+        .option.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .buttons {
             display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
+            gap: 10px;
+            margin-bottom: 20px;
         }
         
         button {
-            padding: 12px 25px;
+            flex: 1;
+            padding: 12px 24px;
             border: none;
             border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .check-btn {
-            background: linear-gradient(to right, #2ecc71, #1abc9c);
-            color: white;
-        }
-        
-        .check-btn:hover {
-            background: linear-gradient(to right, #27ae60, #16a085);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        
-        .show-answer {
-            background: linear-gradient(to right, #3498db, #2980b9);
-            color: white;
-        }
-        
-        .show-answer:hover {
-            background: linear-gradient(to right, #2980b9, #2573a7);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        
-        .feedback {
-            margin-top: 15px;
-            padding: 15px;
-            border-radius: 8px;
+            font-size: 16px;
             font-weight: bold;
-            display: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
         
-        .correct {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            display: block;
+        .submit-btn {
+            background: #667eea;
+            color: white;
         }
         
-        .incorrect {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            display: block;
+        .submit-btn:hover:not(:disabled) {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
         
-        .answer {
-            margin-top: 15px;
-            padding: 15px;
-            background-color: #e8f4f8;
-            border-radius: 8px;
-            border-left: 4px solid #3498db;
-            display: none;
+        .next-btn {
+            background: #28a745;
+            color: white;
+        }
+        
+        .next-btn:hover:not(:disabled) {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         
         .explanation {
-            margin-top: 15px;
-            padding: 15px;
-            background-color: #f8f9fa;
+            background: #fff3cd;
+            border: 1px solid #ffc107;
             border-radius: 8px;
-            border-left: 4px solid #95a5a6;
-            display: none;
-        }
-        
-        .multiple-note {
-            font-style: italic;
-            color: #7f8c8d;
-            margin-bottom: 10px;
-            font-size: 0.95rem;
-        }
-        
-        .summary {
-            text-align: center;
-            padding: 30px;
-            background-color: #f8f9fa;
-            border-radius: 10px;
-            margin-top: 30px;
-            display: none;
-        }
-        
-        .summary h2 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-        }
-        
-        .reset-btn {
-            background: linear-gradient(to right, #e74c3c, #c0392b);
-            color: white;
+            padding: 15px;
             margin-top: 20px;
+            display: none;
         }
         
-        .reset-btn:hover {
-            background: linear-gradient(to right, #c0392b, #a93226);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        .explanation.show {
+            display: block;
         }
         
-        @media (max-width: 768px) {
-            .container {
-                border-radius: 10px;
-            }
-            
-            h1 {
-                font-size: 1.8rem;
-            }
-            
-            .score-panel {
-                flex-direction: column;
-                text-align: center;
-                gap: 10px;
-            }
-            
-            .controls {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            button {
-                width: 100%;
-            }
+        .explanation h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .explanation p {
+            color: #856404;
+            line-height: 1.6;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+        }
+        
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        .modal-content h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .mistake {
+            background: #f8f9fa;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+        
+        .mistake h4 {
+            color: #dc3545;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>PL/SQL Practice Questions</h1>
-            <p class="subtitle">Test your Oracle PL/SQL knowledge with interactive questions</p>
-        </header>
-        
-        <div class="score-panel">
-            <div>Correct: <span id="correct-count">0</span> / <span id="total-questions">1</span></div>
-            <div>Score: <span id="percentage">0%</span></div>
+        <h1>PL/SQL Exam - Part 1</h1>
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
         </div>
         
-        <div class="progress-bar">
-            <div class="progress" id="progress-bar"></div>
+        <div class="question-header" id="questionHeader"></div>
+        <div class="question-text" id="questionText"></div>
+        <div class="code-box" id="codeBox"></div>
+        
+        <div class="options" id="optionsContainer"></div>
+        
+        <div class="buttons">
+            <button class="submit-btn" id="submitBtn">Submit Answer</button>
+            <button class="next-btn" id="nextBtn" disabled>Next Question</button>
         </div>
         
-        <div class="quiz-container">
-            <!-- Question 1 -->
-            <div class="question" id="q1">
-                <div class="question-number">Q101</div>
-                <p>Which of the following identifiers are valid in PL/SQL?</p>
-                <div class="multiple-note">(Select all that apply)</div>
-                
-                <div class="options">
-                    <div class="option" onclick="toggleOption(1, 1)">
-                        <input type="checkbox" id="q1-opt1">
-                        <label for="q1-opt1">1. total#amount</label>
-                    </div>
-                    <div class="option" onclick="toggleOption(1, 2)">
-                        <input type="checkbox" id="q1-opt2">
-                        <label for="q1-opt2">2. 2nd_chance</label>
-                    </div>
-                    <div class="option" onclick="toggleOption(1, 3)">
-                        <input type="checkbox" id="q1-opt3">
-                        <label for="q1-opt3">3. employee-name</label>
-                    </div>
-                    <div class="option" onclick="toggleOption(1, 4)">
-                        <input type="checkbox" id="q1-opt4">
-                        <label for="q1-opt4">4. $_bonus</label>
-                    </div>
-                    <div class="option" onclick="toggleOption(1, 5)">
-                        <input type="checkbox" id="q1-opt5">
-                        <label for="q1-opt5">5. A1B2C3</label>
-                    </div>
-                    <div class="option" onclick="toggleOption(1, 6)">
-                        <input type="checkbox" id="q1-opt6">
-                        <label for="q1-opt6">6. #salary</label>
-                    </div>
-                    <div class="option" onclick="toggleOption(1, 7)">
-                        <input type="checkbox" id="q1-opt7">
-                        <label for="q1-opt7">7. my_variable</label>
-                    </div>
-                </div>
-                
-                <div class="controls">
-                    <button class="check-btn" onclick="checkAnswer(1, [1, 5, 7])">Check Answer</button>
-                    <button class="show-answer" onclick="showAnswer(1)">Show Answer</button>
-                </div>
-                
-                <div class="feedback" id="feedback-1"></div>
-                
-                <div class="answer" id="answer-1">
-                    <strong>Answer:</strong> 1, 5, and 7 (total#amount, A1B2C3, my_variable)
-                </div>
-                
-                <div class="explanation" id="explanation-1">
-                    <p><strong>Explanation:</strong></p>
-                    <ul>
-                        <li><strong>total#amount:</strong> Valid. It starts with a letter and contains only letters, numbers, underscores, and hash sign.</li>
-                        <li><strong>2nd_chance:</strong> Invalid. It starts with a number, which is not allowed as the starting character in PL/SQL identifiers.</li>
-                        <li><strong>employee-name:</strong> Invalid. It contains a hyphen, which is not allowed in PL/SQL identifiers.</li>
-                        <li><strong>$_bonus:</strong> Invalid. It starts with a dollar sign, which is not allowed as the starting character in PL/SQL identifiers.</li>
-                        <li><strong>A1B2C3:</strong> Valid. It starts with a letter and contains only letters and numbers.</li>
-                        <li><strong>#salary:</strong> Invalid. It starts with a hash sign, which is not allowed as the starting character in PL/SQL identifiers.</li>
-                        <li><strong>my_variable:</strong> Valid. It starts with a letter and contains only letters and underscores.</li>
-                    </ul>
-                    <p><strong>Topic:</strong> Recognize valid and invalid identifiers.</p>
-                </div>
-            </div>
-            
-            <div class="summary" id="summary">
-                <h2>Quiz Complete!</h2>
-                <p>You've answered <span id="summary-correct">0</span> out of <span id="summary-total">1</span> questions correctly.</p>
-                <p>Your final score: <span id="final-percentage">0%</span></p>
-                <button class="reset-btn" onclick="resetQuiz()">Reset Quiz</button>
-            </div>
-        </div>
+        <div class="explanation" id="explanation"></div>
+    </div>
+    
+    <div class="modal" id="resultsModal">
+        <div class="modal-content" id="resultsContent"></div>
     </div>
 
     <script>
-        // Initialize score tracking
-        let correctAnswers = 0;
-        const totalQuestions = 1;
-        
-        // Track selected options for each question
-        const selectedOptions = {
-            1: []
-        };
-        
-        // Function to toggle option selection
-        function toggleOption(questionId, optionId) {
-            const optionElement = document.querySelector(`#q${questionId}-opt${optionId}`);
-            const optionContainer = optionElement.parentElement;
+        // Question data
+        const questions = [
+            {
+                text: "Which of the following identifiers are valid in PL/SQL?",
+                options: ["total#amount", "2nd_chance", "employee-name", "$_bonus", "A1B2C3", "#salary", "my_variable"],
+                correct: ["total#amount", "A1B2C3", "my_variable"],
+                explanation: "Identifiers must start with a letter and may include letters, numbers, and underscores. total#amount, A1B2C3, and my_variable are valid.",
+                isMultiple: true
+            },
+            {
+                text: "When declaring a VARCHAR2 variable WITHOUT specifying its size, what happens?",
+                options: ["It defaults to size 1.", "It defaults to size 4000.", "It raises a compilation error.", "The size becomes dynamic."],
+                correct: ["It raises a compilation error."],
+                explanation: "PL/SQL requires explicit size for VARCHAR2; otherwise it fails."
+            },
+            {
+                text: "What does this PL/SQL code return?",
+                code: `DECLARE
+    v_bool BOOLEAN := TRUE;
+BEGIN
+    IF v_bool THEN
+        dbms_output.put_line('Yes');
+    ELSE
+        dbms_output.put_line('No');
+    END IF;
+
+    DECLARE
+        v_bool BOOLEAN := FALSE;
+    BEGIN
+        IF v_bool THEN
+            dbms_output.put_line('Yes');
+        ELSE
+            dbms_output.put_line('No');
+        END IF;
+    END;
+END;`,
+                options: ["Yes / No", "No / Yes", "Yes / Yes", "No / No"],
+                correct: ["Yes / No"],
+                explanation: "First boolean is TRUE, prints Yes. Inner block sets FALSE, prints No."
+            },
+            {
+                text: "If bind_value is -5, what is v_num printed?",
+                code: `DECLARE
+    v_num NUMBER := 10;
+BEGIN
+    v_num := v_num + &bind_value;
+    IF v_num > 20 THEN
+        v_num := v_num - 10;
+    ELSIF v_num < 10 THEN
+        v_num := v_num + 10;
+    END IF;
+    DBMS_OUTPUT.PUT_LINE(v_num);
+END;`,
+                options: ["15", "5", "20", "25"],
+                correct: ["15"],
+                explanation: "10 + (-5) = 5, condition triggers v_num + 10 = 15."
+            },
+            {
+                text: "Given bind_number=7, what is the output?",
+                options: ["Range 6-10", "Iteration 1", "Middle Range", "Iteration 3"],
+                correct: ["Iteration 3"],
+                explanation: "Loop overwrites value each iteration; final value is 'Iteration 3'."
+            },
+            {
+                text: "Which numbers will be printed by print_multiples(3,10)?",
+                options: ["1,2,3..10", "3,6,9", "3,6,9,12", "1,4,7,10"],
+                correct: ["3,6,9"],
+                explanation: "Multiples of 3 between 1 and 10."
+            },
+            {
+                text: "Which trigger should be created to log new rows inserted into Customers?",
+                options: ["Statement trigger on Change_Log", "Statement trigger on Customers", "Row trigger on Change_Log", "Row trigger on Customers"],
+                correct: ["Row trigger on Customers"],
+                explanation: "A row-level trigger logs EACH inserted row."
+            },
+            {
+                text: "Which method removes the last element from collection?",
+                options: ["DELETE(1,5)", "TRIM", "DELETE", "TRIM(5)"],
+                correct: ["TRIM"],
+                explanation: "TRIM with no arguments removes last element."
+            },
+            {
+                text: "Which data type stores year, month, day COARSE values?",
+                options: ["DATE", "TIMESTAMP", "TIMESTAMP WITH LOCAL TIME ZONE", "TIMESTAMP WITH TIME ZONE"],
+                correct: ["DATE"],
+                explanation: "DATE stores day-level without timezone."
+            },
+            {
+                text: "Which clause fetches one row into variables?",
+                options: ["OPEN CURSOR", "FETCH INTO", "DECLARE CURSOR", "CLOSE CURSOR"],
+                correct: ["FETCH INTO"],
+                explanation: "FETCH retrieves a row from an opened cursor."
+            }
+            // Add remaining questions following the same pattern...
+        ];
+
+        // Shuffle array
+        function shuffle(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // App state
+        let currentIndex = 0;
+        let shuffledQuestions = shuffle(questions);
+        let userAnswers = {};
+        let mistakes = [];
+
+        // DOM elements
+        const questionHeader = document.getElementById('questionHeader');
+        const questionText = document.getElementById('questionText');
+        const codeBox = document.getElementById('codeBox');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const submitBtn = document.getElementById('submitBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const explanation = document.getElementById('explanation');
+        const progressBar = document.getElementById('progressBar');
+
+        // Show question
+        function showQuestion() {
+            const q = shuffledQuestions[currentIndex];
+            const questionNum = currentIndex + 1;
+            const totalQuestions = shuffledQuestions.length;
             
-            if (optionElement.checked) {
-                optionElement.checked = false;
-                optionContainer.classList.remove('selected');
-                // Remove from selected options
-                const index = selectedOptions[questionId].indexOf(optionId);
-                if (index > -1) {
-                    selectedOptions[questionId].splice(index, 1);
-                }
+            // Update progress
+            const progress = (questionNum / totalQuestions) * 100;
+            progressBar.style.width = progress + '%';
+            
+            // Question header
+            const selectText = q.isMultiple ? `(Select ${q.correct.length} answers)` : '(Select 1 answer)';
+            questionHeader.textContent = `Question ${questionNum} of ${totalQuestions}`;
+            questionText.textContent = `${q.text} ${selectText}`;
+            
+            // Code box
+            if (q.code) {
+                codeBox.textContent = q.code;
+                codeBox.classList.add('show');
             } else {
-                optionElement.checked = true;
-                optionContainer.classList.add('selected');
-                // Add to selected options only if not already present
-                if (!selectedOptions[questionId].includes(optionId)) {
-                    selectedOptions[questionId].push(optionId);
+                codeBox.classList.remove('show');
+            }
+            
+            // Options
+            const shuffledOptions = shuffle(q.options);
+            optionsContainer.innerHTML = '';
+            
+            shuffledOptions.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                
+                const inputType = q.isMultiple ? 'checkbox' : 'radio';
+                const input = document.createElement('input');
+                input.type = inputType;
+                input.name = 'answer';
+                input.value = option;
+                input.id = `option${index}`;
+                
+                const label = document.createElement('label');
+                label.htmlFor = `option${index}`;
+                label.textContent = option;
+                label.style.cursor = 'pointer';
+                label.style.flex = '1';
+                
+                optionDiv.appendChild(input);
+                optionDiv.appendChild(label);
+                optionsContainer.appendChild(optionDiv);
+                
+                optionDiv.addEventListener('click', (e) => {
+                    if (e.target.tagName !== 'INPUT') {
+                        input.click();
+                    }
+                });
+            });
+            
+            // Reset buttons and explanation
+            submitBtn.disabled = false;
+            nextBtn.disabled = true;
+            explanation.classList.remove('show');
+        }
+
+        // Submit answer
+        submitBtn.addEventListener('click', () => {
+            const q = shuffledQuestions[currentIndex];
+            const selected = Array.from(document.querySelectorAll('input[name="answer"]:checked'))
+                .map(input => input.value);
+            
+            if (selected.length === 0) {
+                alert('Please select an answer.');
+                return;
+            }
+            
+            userAnswers[currentIndex] = selected;
+            
+            const correctSet = new Set(q.correct);
+            const selectedSet = new Set(selected);
+            const isCorrect = correctSet.size === selectedSet.size && 
+                             [...correctSet].every(item => selectedSet.has(item));
+            
+            // Color feedback
+            document.querySelectorAll('.option').forEach(optionDiv => {
+                const input = optionDiv.querySelector('input');
+                const value = input.value;
+                const isCorrectAnswer = correctSet.has(value);
+                const isSelectedAnswer = selectedSet.has(value);
+                
+                optionDiv.classList.add('disabled');
+                input.disabled = true;
+                
+                if (isCorrectAnswer) {
+                    optionDiv.classList.add('correct');
                 }
+                if (isSelectedAnswer && !isCorrectAnswer) {
+                    optionDiv.classList.add('incorrect');
+                }
+            });
+            
+            // Show explanation
+            explanation.innerHTML = `
+                <h3>${isCorrect ? '✓ Correct!' : '✗ Incorrect!'}</h3>
+                <p><strong>Correct answer(s):</strong> ${q.correct.join(', ')}</p>
+                <p><strong>Explanation:</strong> ${q.explanation}</p>
+            `;
+            explanation.classList.add('show');
+            
+            if (!isCorrect) {
+                mistakes.push({ question: q, userAnswer: selected });
             }
             
-            // Sort the array to maintain consistent order
-            selectedOptions[questionId].sort((a, b) => a - b);
-            
-            console.log(`Question ${questionId} selected options:`, selectedOptions[questionId]);
-        }
-        
-        // Function to check answers
-        function checkAnswer(questionId, correctAnswersArray) {
-            const feedback = document.getElementById(`feedback-${questionId}`);
-            const userAnswers = [...selectedOptions[questionId]]; // Create a copy
-            
-            // Sort arrays for comparison
-            const sortedUserAnswers = userAnswers.sort((a, b) => a - b);
-            const sortedCorrectAnswers = [...correctAnswersArray].sort((a, b) => a - b);
-            
-            console.log("User answers:", sortedUserAnswers);
-            console.log("Correct answers:", sortedCorrectAnswers);
-            
-            // Check if arrays are equal
-            const isCorrect = JSON.stringify(sortedUserAnswers) === JSON.stringify(sortedCorrectAnswers);
-            
-            if (isCorrect) {
-                feedback.innerHTML = '<div class="correct">Correct! Well done.</div>';
-                correctAnswers++;
-                updateScore();
+            submitBtn.disabled = true;
+            nextBtn.disabled = false;
+        });
+
+        // Next question
+        nextBtn.addEventListener('click', () => {
+            currentIndex++;
+            if (currentIndex >= shuffledQuestions.length) {
+                showResults();
             } else {
-                feedback.innerHTML = `<div class="incorrect">Incorrect. Your answer: ${sortedUserAnswers.join(', ')}. Correct answer: ${sortedCorrectAnswers.join(', ')}.</div>`;
+                showQuestion();
+            }
+        });
+
+        // Show results
+        function showResults() {
+            const modal = document.getElementById('resultsModal');
+            const content = document.getElementById('resultsContent');
+            
+            let html = `
+                <h2>Exam Complete!</h2>
+                <p style="font-size: 18px; margin-bottom: 20px;">
+                    You made <strong>${mistakes.length}</strong> mistake(s) out of ${shuffledQuestions.length} questions.
+                </p>
+            `;
+            
+            if (mistakes.length > 0) {
+                html += '<h3 style="margin-bottom: 15px;">Review Your Mistakes:</h3>';
+                mistakes.forEach((mistake, index) => {
+                    html += `
+                        <div class="mistake">
+                            <h4>Question ${index + 1}</h4>
+                            <p><strong>Question:</strong> ${mistake.question.text}</p>
+                            <p><strong>Your answer:</strong> ${mistake.userAnswer.join(', ')}</p>
+                            <p><strong>Correct answer:</strong> ${mistake.question.correct.join(', ')}</p>
+                            <p><strong>Explanation:</strong> ${mistake.question.explanation}</p>
+                            ${mistake.question.code ? `<pre style="background: #f5f5f5; padding: 10px; margin-top: 10px; border-radius: 5px; overflow-x: auto;">${mistake.question.code}</pre>` : ''}
+                        </div>
+                    `;
+                });
+            } else {
+                html += '<p style="color: #28a745; font-size: 18px;">Perfect score! 🎉</p>';
             }
             
-            // Show feedback
-            feedback.style.display = 'block';
+            html += '<button onclick="location.reload()" style="margin-top: 20px; background: #667eea; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px;">Restart Quiz</button>';
+            
+            content.innerHTML = html;
+            modal.classList.add('show');
         }
-        
-        // Function to show answer
-        function showAnswer(questionId) {
-            const answer = document.getElementById(`answer-${questionId}`);
-            const explanation = document.getElementById(`explanation-${questionId}`);
-            
-            answer.style.display = 'block';
-            explanation.style.display = 'block';
-        }
-        
-        // Function to update score display
-        function updateScore() {
-            document.getElementById('correct-count').textContent = correctAnswers;
-            document.getElementById('summary-correct').textContent = correctAnswers;
-            const percentage = Math.round((correctAnswers / totalQuestions) * 100);
-            document.getElementById('percentage').textContent = `${percentage}%`;
-            document.getElementById('final-percentage').textContent = `${percentage}%`;
-            document.getElementById('progress-bar').style.width = `${percentage}%`;
-            
-            // Show summary if all questions are answered
-            if (correctAnswers === totalQuestions) {
-                document.getElementById('summary').style.display = 'block';
-            }
-        }
-        
-        // Function to reset the quiz
-        function resetQuiz() {
-            correctAnswers = 0;
-            updateScore();
-            
-            // Clear all selections
-            selectedOptions[1] = [];
-            
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = false;
-                checkbox.parentElement.classList.remove('selected');
-            });
-            
-            const feedbacks = document.querySelectorAll('.feedback');
-            feedbacks.forEach(feedback => {
-                feedback.style.display = 'none';
-            });
-            
-            const answers = document.querySelectorAll('.answer, .explanation');
-            answers.forEach(answer => {
-                answer.style.display = 'none';
-            });
-            
-            document.getElementById('summary').style.display = 'none';
-        }
-        
-        // Initialize score display
-        updateScore();
+
+        // Start the quiz
+        showQuestion();
     </script>
 </body>
 </html>
