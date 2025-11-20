@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PL/SQL Exam - Part 1</title>
+    <title>PL/SQL Exam - Complete</title>
     <style>
         * {
             margin: 0;
@@ -237,7 +237,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>PL/SQL Exam - Part 1</h1>
+        <h1>PL/SQL Exam - Complete (30 Questions)</h1>
         <div class="progress">
             <div class="progress-bar" id="progressBar"></div>
         </div>
@@ -261,7 +261,7 @@
     </div>
 
     <script>
-        // Question data
+        // All 30 questions
         const questions = [
             {
                 text: "Which of the following identifiers are valid in PL/SQL?",
@@ -320,6 +320,20 @@ END;`,
             },
             {
                 text: "Given bind_number=7, what is the output?",
+                code: `DECLARE
+    v_result VARCHAR2(50);
+BEGIN
+    FOR i IN 1..&bind_number LOOP
+        IF i BETWEEN 1 AND 5 THEN
+            v_result := 'Range 1-5';
+        ELSIF i BETWEEN 6 AND 10 THEN
+            v_result := 'Range 6-10';
+        ELSE
+            v_result := 'Iteration ' || i;
+        END IF;
+    END LOOP;
+    DBMS_OUTPUT.PUT_LINE(v_result);
+END;`,
                 options: ["Range 6-10", "Iteration 1", "Middle Range", "Iteration 3"],
                 correct: ["Iteration 3"],
                 explanation: "Loop overwrites value each iteration; final value is 'Iteration 3'."
@@ -353,8 +367,147 @@ END;`,
                 options: ["OPEN CURSOR", "FETCH INTO", "DECLARE CURSOR", "CLOSE CURSOR"],
                 correct: ["FETCH INTO"],
                 explanation: "FETCH retrieves a row from an opened cursor."
+            },
+            {
+                text: "When is an explicit cursor essential?",
+                options: ["JOIN query", "Query returning multiple rows", "Using aggregate functions", "Single-row SELECT"],
+                correct: ["Query returning multiple rows"],
+                explanation: "Explicit cursor handles multi-row results."
+            },
+            {
+                text: "Which package is used for dynamic SQL?",
+                options: ["DBMS_ALERT", "DBMS_SCHEDULER", "DBMS_OUTPUT", "DBMS_SQL"],
+                correct: ["DBMS_SQL"],
+                explanation: "DBMS_SQL supports parsing & exec of dynamic SQL."
+            },
+            {
+                text: "Which call causes no compilation error for overloaded parameters?",
+                options: ["overload.test(p_first=>1)", "overload.test(p_in=>1)", "overload.test(1)", "None of the above"],
+                correct: ["None of the above"],
+                explanation: "Without ambiguity, named parameters avoid conflict."
+            },
+            {
+                text: "What happens when calling overload.test('a') with VARCHAR2 and CHAR overloads?",
+                options: ["Raises PLS-00307 ambiguity", "Calls VARCHAR2 version", "Calls CHAR version", "Fails because char literal invalid"],
+                correct: ["Raises PLS-00307 ambiguity"],
+                explanation: "Literal 'a' matches both CHAR and VARCHAR2."
+            },
+            {
+                text: "Calling mode_overload.demo(v_num) results in:",
+                options: ["Executes IN mode", "Raises PLS-00307", "Executes OUT mode", "Executes IN OUT mode"],
+                correct: ["Raises PLS-00307"],
+                explanation: "Ambiguity between multiple overloads."
+            },
+            {
+                text: "Why does this trigger fail?",
+                code: `CREATE OR REPLACE TRIGGER tr_discount_orders
+BEFORE INSERT ON orders
+FOR EACH ROW
+WHEN (NEW.order_amount > 10000)
+BEGIN
+    SELECT order_amount * 0.95
+    INTO :NEW.order_amount
+    FROM orders
+    WHERE order_id = :NEW.order_id;
+END;`,
+                options: ["Trigger on wrong table", "Mutating table error", "Wrong discount logic", "Should be statement-level"],
+                correct: ["Mutating table error"],
+                explanation: "Row-level trigger querying same table = mutating table."
+            },
+            {
+                text: "Best way to log updates without affecting main transaction?",
+                options: ["Simple AFTER UPDATE trigger", "BEFORE trigger with COMMIT", "Trigger with PRAGMA AUTONOMOUS_TRANSACTION", "Stored procedure with ROLLBACK"],
+                correct: ["Trigger with PRAGMA AUTONOMOUS_TRANSACTION"],
+                explanation: "Autonomous transaction allows separate commit."
+            },
+            {
+                text: "Which are true about PLSCOPE_SETTINGS?",
+                options: ["Default is IDENTIFIERS:NONE", "It retroactively analyzes existing code", "Setting NONE collects identifiers", "Used for performance tuning", "IDENTIFIERS:ALL collects all identifiers"],
+                correct: ["Default is IDENTIFIERS:NONE", "IDENTIFIERS:ALL collects all identifiers"],
+                explanation: "PLScope tracks identifiers only after compilation.",
+                isMultiple: true
+            },
+            {
+                text: "Which four are true about PLSQL_WARNINGS?",
+                options: ["Enables warnings as errors", "Default is DISABLE:ALL", "ERROR:ALL makes warnings errors", "Only runtime warnings", "DBMS_WARNING manages warnings"],
+                correct: ["Enables warnings as errors", "Default is DISABLE:ALL", "ERROR:ALL makes warnings errors", "DBMS_WARNING manages warnings"],
+                explanation: "Warnings can be enabled/disabled, managed with DBMS_WARNING.",
+                isMultiple: true
+            },
+            {
+                text: "Which changes do NOT trigger signature invalidation?",
+                options: ["Changing body only", "Changing VARCHAR→DATE", "Specifying OUT explicitly", "Changing NUMBER→FLOAT"],
+                correct: ["Changing body only", "Changing NUMBER→FLOAT"],
+                explanation: "Only interface changes invalidate signature.",
+                isMultiple: true
+            },
+            {
+                text: "How to minimize invalidation?",
+                options: ["Add columns at table start", "Add new procedures at end", "Use more JOINs", "Reference tables via views"],
+                correct: ["Add new procedures at end", "Reference tables via views"],
+                explanation: "Views & stable package layout reduce invalidations.",
+                isMultiple: true
+            },
+            {
+                text: "Which scenarios cause unsuccessful recompilation?",
+                options: ["Referenced object dropped", "Referenced column removed", "Parameter list changed", "Referenced view replaced", "New column added but unused"],
+                correct: ["Referenced object dropped", "Referenced column removed", "Parameter list changed", "Referenced view replaced"],
+                explanation: "Structural changes break dependencies.",
+                isMultiple: true
+            },
+            {
+                text: "Which improve successful recompilation?",
+                options: ["Hardcode data types", "%TYPE", "%ROWTYPE", "Always implicit cursors"],
+                correct: ["%TYPE", "%ROWTYPE"],
+                explanation: "TYPE and ROWTYPE make code resilient to table changes.",
+                isMultiple: true
+            },
+            {
+                text: "When is conditional compilation useful?",
+                options: ["Enable debug lines", "Test private procedures", "Control compilation via flags", "Encrypt PL/SQL code", "Manage user sessions"],
+                correct: ["Enable debug lines", "Test private procedures", "Control compilation via flags"],
+                explanation: "Conditional compilation toggles code visibility.",
+                isMultiple: true
+            },
+            {
+                text: "When calls to ACCESSIBLE BY protected subprograms fail?",
+                options: ["Remote procedure call", "Trigger in same schema", "Conditional compilation", "Package in another schema", "Public API call", "DBMS_SQL call", "Static SQL access"],
+                correct: ["Remote procedure call", "Conditional compilation", "DBMS_SQL call", "Static SQL access"],
+                explanation: "ACCESSIBLE BY allows only direct calls from listed units.",
+                isMultiple: true
+            },
+            {
+                text: "How to enable deprecation warnings?",
+                options: ["ALTER SESSION SET PLSQL_WARNINGS='ENABLE:ALL'", "DBMS_WARNING.SET_WARNING_SETTING_STRING", "DBMS_WARNING.ADD_WARNING_SETTING_NUM", "PRAGMA DEPRECATE", "DBMS_COMPILER.SET_WARNINGS"],
+                correct: ["ALTER SESSION SET PLSQL_WARNINGS='ENABLE:ALL'", "DBMS_WARNING.SET_WARNING_SETTING_STRING", "DBMS_WARNING.ADD_WARNING_SETTING_NUM"],
+                explanation: "Warnings managed through PLSQL_WARNINGS and DBMS_WARNING.",
+                isMultiple: true
+            },
+            {
+                text: "What happens with NOCOPY OUT/INOUT on exception?",
+                options: ["Original values preserved", "Modified values propagate", "No change occurs", "Compiler error"],
+                correct: ["Original values preserved"],
+                explanation: "Without NOCOPY, pass-by-value uses buffer, not copied back after error."
+            },
+            {
+                text: "What describes PARALLEL_ENABLE behavior?",
+                options: ["Processes specific range", "Executes serially", "Partitions cursor randomly", "Returns rows in exact order"],
+                correct: ["Partitions cursor randomly"],
+                explanation: "Parallel execution servers divide REF CURSOR partitions."
+            },
+            {
+                text: "Which are true about AUTONOMOUS_TRANSACTION, STRICT, and UROWID?",
+                options: ["Autonomous TX commits independently", "STRICT ensures consecutive indexes", "UROWID stores logical & physical", "Autonomous TX rolls back parent", "Associative arrays with strings cannot use STRICT", "UROWID stores only logical", "STRICT raises NO_DATA_FOUND"],
+                correct: ["Autonomous TX commits independently", "UROWID stores logical & physical", "Associative arrays with strings cannot use STRICT"],
+                explanation: "STRICT doesn't exist, UROWID stores both rowid types.",
+                isMultiple: true
+            },
+            {
+                text: "Which strategy fits the following error-logging code?",
+                options: ["Strategy 1 (Eliminate bugs)", "Strategy 2 (Let crash)", "Strategy 3 (Catch & continue)", "Strategy 4 (Catch, log, re-raise)"],
+                correct: ["Strategy 4 (Catch, log, re-raise)"],
+                explanation: "The exception is captured, logged, and raised again."
             }
-            // Add remaining questions following the same pattern...
         ];
 
         // Shuffle array
@@ -511,10 +664,16 @@ END;`,
             const modal = document.getElementById('resultsModal');
             const content = document.getElementById('resultsContent');
             
+            const score = shuffledQuestions.length - mistakes.length;
+            const percentage = Math.round((score / shuffledQuestions.length) * 100);
+            
             let html = `
                 <h2>Exam Complete!</h2>
                 <p style="font-size: 18px; margin-bottom: 20px;">
-                    You made <strong>${mistakes.length}</strong> mistake(s) out of ${shuffledQuestions.length} questions.
+                    Score: <strong>${score}/${shuffledQuestions.length}</strong> (${percentage}%)
+                </p>
+                <p style="font-size: 16px; margin-bottom: 20px;">
+                    You made <strong>${mistakes.length}</strong> mistake(s).
                 </p>
             `;
             
@@ -523,20 +682,20 @@ END;`,
                 mistakes.forEach((mistake, index) => {
                     html += `
                         <div class="mistake">
-                            <h4>Question ${index + 1}</h4>
+                            <h4>Mistake ${index + 1}</h4>
                             <p><strong>Question:</strong> ${mistake.question.text}</p>
                             <p><strong>Your answer:</strong> ${mistake.userAnswer.join(', ')}</p>
                             <p><strong>Correct answer:</strong> ${mistake.question.correct.join(', ')}</p>
                             <p><strong>Explanation:</strong> ${mistake.question.explanation}</p>
-                            ${mistake.question.code ? `<pre style="background: #f5f5f5; padding: 10px; margin-top: 10px; border-radius: 5px; overflow-x: auto;">${mistake.question.code}</pre>` : ''}
+                            ${mistake.question.code ? `<pre style="background: #f5f5f5; padding: 10px; margin-top: 10px; border-radius: 5px; overflow-x: auto; font-family: 'Courier New', monospace; font-size: 12px;">${mistake.question.code}</pre>` : ''}
                         </div>
                     `;
                 });
             } else {
-                html += '<p style="color: #28a745; font-size: 18px;">Perfect score! 🎉</p>';
+                html += '<p style="color: #28a745; font-size: 18px; font-weight: bold;">Perfect score! 🎉</p>';
             }
             
-            html += '<button onclick="location.reload()" style="margin-top: 20px; background: #667eea; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px;">Restart Quiz</button>';
+            html += '<button onclick="location.reload()" style="margin-top: 20px; background: #667eea; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold;">Restart Quiz</button>';
             
             content.innerHTML = html;
             modal.classList.add('show');
